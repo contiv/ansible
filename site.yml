@@ -71,7 +71,8 @@
   roles:
   - { role: base }
   - { role: docker, force_restart: "true" }
-  - { role: etcd, run_as: master, etcd_peers_group: net-master }
+  - { role: etcd, run_as: master, etcd_peers_group: net-master,
+            monitor_interface: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['interface'] }}" }
   - { role: swarm, run_as: master }
   - { role: contiv_network, run_as: master, contivnet_bin_url: "https://cisco.box.com/shared/static/hs2gp4jfvssr1bu2geh3o6yipse9ljjd.bz2" }
   - { role: aci, run_as: master }
@@ -84,7 +85,7 @@
   roles:
   - { role: base }
   - { role: docker, force_restart: "true" }
-  - { role: etcd, run_as: worker }
+  - { role: etcd, run_as: worker, monitor_interface: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['interface'] }}" }
   - { role: swarm, run_as: worker }
   - { role: contiv_network, run_as: worker, contivnet_bin_url: "https://cisco.box.com/shared/static/hs2gp4jfvssr1bu2geh3o6yipse9ljjd.bz2" }
   - { role: aci, run_as: worker }
