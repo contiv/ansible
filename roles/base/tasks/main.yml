@@ -25,6 +25,9 @@
 - name: install openstack kilo repo
   yum: "name=https://repos.fedorapeople.org/repos/openstack/openstack-kilo/rdo-release-kilo-1.noarch.rpm"
   when: ansible_os_family == "RedHat"
+- name: apply workaround for apt get failure
+  shell: rm -rf /var/lib/apt/lists/*
+  when: ansible_os_family == "Debian"
 - name: install base packages (debian)
   apt: "update_cache=yes name={{ item }}"
   with_items:
@@ -39,7 +42,6 @@
     - librbd-dev
     - lshw
   when: ansible_os_family == "Debian"
-  ignore_errors: yes
 - name: install base packages (redhat)
   yum: "update_cache=yes name={{ item }}"
   with_items:

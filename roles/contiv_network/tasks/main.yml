@@ -19,7 +19,7 @@
 - name: download netmaster and netplugin
   get_url:
     validate_certs: no
-    url: https://cisco.box.com/shared/static/hs2gp4jfvssr1bu2geh3o6yipse9ljjd.bz2
+    url: "{{ contivnet_bin_url }}"
     dest: /tmp/contivnet.tar.bz2
 
 - name: install netmaster and netplugin
@@ -51,18 +51,3 @@
 
 - name: setup netmaster host alias
   shell: echo "{{ service_vip }} netmaster" >> /etc/hosts
-
-# XXX: need to move the following to correct roles
-#- name: install contivctl
-#  shell: source /etc/profile.d/00golang.sh && go get github.com/contiv/contivctl
-#
-#- name: install docker-compose
-#  shell: pip install docker-compose
-#
-#- name: install contiv-compose
-#  shell: >
-#     source /etc/profile.d/00golang.sh && \
-#     go get github.com/contiv/libcompose && \
-#     cd $GOPATH/src/github.com/contiv/libcompose && \
-#     make binary && \
-#     ln -s `pwd`/bundles/libcompose-cli_linux-amd64 $GOPATH/bin/contiv-compose

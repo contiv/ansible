@@ -1,8 +1,6 @@
 ---
 # This role contains tasks for configuring and starting etcd service
 
-#- name: debug 
-#  debug: var=hostvars[inventory_hostname]
 - name: copy the etcd start/stop script
   template: src=etcd.j2 dest=/usr/bin/etcd.sh mode=u=rwx,g=rx,o=rx
 
