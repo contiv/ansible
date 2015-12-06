@@ -3,9 +3,14 @@
 
 - name: copy the swarm start/stop script
   template: src=swarm.j2 dest=/usr/bin/swarm.sh mode=u=rwx,g=rx,o=rx
+  register: swarm_sh_conf_result
 
 - name: copy systemd units for swarm
   copy: src=swarm.service dest=/etc/systemd/system/swarm.service
+  register: swarm_serv_conf_result
 
-- name: start swarm
-  shell: systemctl daemon-reload && systemctl start swarm
+- name: restart swarm if docker restarted or config changed or force_restart set
+  shell: systemctl daemon-reload && systemctl stop swarm && systemctl start swarm
+  when: docker_restart_result.changed or swarm_install_result.changed or
+        swarm_sh_conf_result.changed or swarm_serv_conf_result.changed or 
+        force_restart

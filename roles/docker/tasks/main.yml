@@ -22,4 +22,6 @@
 
 - name: restart docker
   shell: systemctl daemon-reload && systemctl stop docker && systemctl start docker-tcp.socket && systemctl start docker
-  when: docker_env_conf_result.changed or docker_tcp_conf_result.changed or docker_svc_conf_result.changed
+  when: docker_install_result.changed or swarm_install_result.changed or docker_env_conf_result.changed or
+        docker_tcp_conf_result.changed or docker_svc_conf_result.changed or force_restart
+  register: docker_restart_result

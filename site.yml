@@ -60,3 +60,30 @@
   - { role: swarm, run_as: worker }
   - { role: contiv_network, run_as: worker }
   - { role: contiv_storage, run_as: worker }
+
+# net-master hosts correspond to cluster machines that run the master
+# logic of the contiv net services
+- hosts: net-master
+  sudo: true
+  environment: env
+  roles:
+  - { role: base }
+  - { role: docker, force_restart: "true" }
+  - { role: etcd, run_as: master, etcd_peers_group: net-master }
+  - { role: swarm, run_as: master }
+  - { role: contiv_network, run_as: master }
+  - { role: aci, run_as: master }
+
+# net-worker hosts correspond to cluster machines that run the worker
+# logic of the contiv net services
+- hosts: net-worker
+  sudo: true
+  environment: env
+  roles:
+  - { role: base }
+  - { role: docker, force_restart: "true" }
+  - { role: etcd, run_as: worker }
+  - { role: swarm, run_as: worker }
+  - { role: contiv_network, run_as: worker }
+  - { role: aci, run_as: worker }
+
