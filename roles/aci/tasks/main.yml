@@ -1,0 +1,23 @@
+---
+# This role contains tasks specific to aci
+
+  - name: Install docker-py as a workaround for Ansible issue
+    pip: name=docker-py version=1.2.3
+    when: run_as == "master"
+
+  - name: start aci-gw container
+    docker:
+        name: contiv-aci-gw
+        image: contiv/aci-gw
+        state: reloaded
+        pull: always
+        net: host
+        env:
+             APIC_URL: "{{ apic_url }}"
+             APIC_USERNAME: "{{ apic_username }}"
+             APIC_PASSWORD: "{{ apic_password }}"
+             APIC_LEAF_NODES: "{{ apic_leaf_nodes }}"
+    when: run_as == "master"
+    ignore_errors: yes
+
+

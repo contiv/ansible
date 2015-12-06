@@ -1,0 +1,7 @@
+{# If an interface is specified for netplugin, use it #}
+{# Otherwise, hope for the best                       #}
+{% if netplugin_if is defined %}
+NETPLUGIN_ARGS='--native-integration=true -vlan-if {{netplugin_if}}'
+{% else %}
+NETPLUGIN_ARGS='--native-integration=true'
+{% endif %}

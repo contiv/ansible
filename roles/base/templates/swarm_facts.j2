@@ -1,0 +1,21 @@
+#!/bin/sh
+
+sver=$(sudo swarm -v | awk '{print $3}')
+if [ -z "$sver" ]; then
+  sver="0.0"
+fi
+
+if [[ $sver == *"dev" ]]; then
+  exper="true"
+else
+  exper="false"
+fi
+
+cat <<EOF
+
+{
+  "local_swarm_version" : "$sver",
+  "local_experimental"  : "$exper"
+}
+
+EOF
