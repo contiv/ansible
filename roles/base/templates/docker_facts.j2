@@ -1,0 +1,20 @@
+#!/bin/sh
+
+dver=$(sudo docker version | awk '/Version/{print $2; exit 0}')
+exper=$(sudo docker version | awk '/Experiment/{print $2; exit 0}')
+if [ -z "$dver" ]; then
+  dver="0.0"
+fi
+
+if [ -z "$exper" ]; then
+  exper="false"
+fi
+
+cat <<EOF
+
+{
+  "local_docker_version" : "$dver",
+  "local_experimental"   : "$exper"
+}
+
+EOF

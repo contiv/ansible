@@ -1,9 +1,33 @@
 ---
 # This role contains tasks for install base packages
 
+- name: ensure custom facts directory exists
+  file: >
+    path=/etc/ansible/facts.d
+    recurse=yes
+    state=directory
+
+- name: install custom fact module for docker
+  template: >
+    src=docker_facts.j2
+    dest=/etc/ansible/facts.d/docker_facts.fact
+    mode=0755
+
+- name: install custom fact module for swarm
+  template: >
+    src=swarm_facts.j2
+    dest=/etc/ansible/facts.d/swarm_facts.fact
+    mode=0755
+
+- name: reload ansible local facts
+  setup: filter=ansible_local
+
 - name: install openstack kilo repo
   yum: "name=https://repos.fedorapeople.org/repos/openstack/openstack-kilo/rdo-release-kilo-1.noarch.rpm"
   when: ansible_os_family == "RedHat"
+- name: apply workaround for apt get failure
+  shell: rm -rf /var/lib/apt/lists/*
+  when: ansible_os_family == "Debian"
 - name: install base packages (debian)
   apt: "update_cache=yes name={{ item }}"
   with_items:
@@ -54,16 +78,24 @@
   copy:
     dest: /etc/profile.d/00golang.sh
     content: "export PATH=/opt/golang/bin:/usr/local/go/bin:$PATH\nexport GOPATH=/opt/golang"
+- name: remove older docker
+  file: path=/usr/bin/docker state=absent
+  when: ("{{ansible_local.docker_facts.local_docker_version}}" < "1.9.0") or ("{{ansible_local.docker_facts.local_experimental}}" == "true")
 - name: install docker
   shell: creates=/usr/bin/docker curl https://get.docker.com | bash
+  register: docker_install_result
 - name: add vagrant user to docker group
   user: name=vagrant groups=docker append=yes
+- name: remove older swarm
+  file: path=/usr/bin/swarm state=absent
+  when: ("{{ansible_local.swarm_facts.local_swarm_version}}" < "1.0.0") or ("{{ansible_local.swarm_facts.local_experimental}}" == "true")
 - name: download and install swarm
   get_url:
     validate_certs: no
     url: https://cisco.box.com/shared/static/0txiq5h7282hraujk09eleoevptd5jpl
     dest: /usr/bin/swarm
     mode: u=rwx,g=rx,o=rx
+  register: swarm_install_result
 - name: download ovs binaries (debian)
   get_url:
     validate_certs: no
