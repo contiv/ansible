@@ -72,11 +72,30 @@ start)
     ;;
 
 stop)
+<<<<<<< HEAD
+=======
+    {% if run_as == "worker" -%}
+    echo "==> no 'stop' action for proxy"
+    {% else -%}
+    #XXX: do better cleanup like remove the member from the cluster only if it was started
+    out=`etcdctl member list | grep {{ node_name }} | awk -F ':' '{print $1}'`
+    if [ "$out" != "" ]; then
+        echo "==> removing member: " $out
+        etcdctl member remove $out
+    fi
+    {% endif -%}
+>>>>>>> 26dc95a15bd02ed17f72410efab8c7182be0bbaf
     ;;
 
 post-stop)
     #XXX: is there a case when we should not cleanup the data dir on stop?
+<<<<<<< HEAD
     ;;
+=======
+    rm -rf $ETCD_DATA_DIR
+    ;;
+
+>>>>>>> 26dc95a15bd02ed17f72410efab8c7182be0bbaf
 *)
     echo USAGE: $usage
     exit 1
