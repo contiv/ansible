@@ -35,7 +35,15 @@ start)
     {% endmacro -%}
 
     {% macro init_cluster() -%}
-    export ETCD_INITIAL_CLUSTER_STATE=new
+
+    if [ ! -f /var/tmp/etcd.existing ]
+    then
+      export ETCD_INITIAL_CLUSTER_STATE=new
+      touch /var/tmp/etcd.existing
+    else
+      export ETCD_INITIAL_CLUSTER_STATE=existing
+    fi
+
     export ETCD_INITIAL_CLUSTER="
     {%- for host in groups[etcd_peers_group] -%}
     {%- if loop.last -%}
@@ -64,23 +72,11 @@ start)
     ;;
 
 stop)
-    {% if run_as == "worker" -%}
-    echo "==> no 'stop' action for proxy"
-    {% else -%}
-    #XXX: do better cleanup like remove the member from the cluster only if it was started
-    out=`etcdctl member list | grep {{ node_name }} | awk -F ':' '{print $1}'`
-    if [ "$out" != "" ]; then
-        echo "==> removing member: " $out
-        etcdctl member remove $out
-    fi
-    {% endif -%}
     ;;
 
 post-stop)
     #XXX: is there a case when we should not cleanup the data dir on stop?
-    rm -rf $ETCD_DATA_DIR
     ;;
-
 *)
     echo USAGE: $usage
     exit 1
