@@ -43,13 +43,13 @@
     dest: /usr/local/
 - name: install Golang v1.5.1
   shell: chdir=/usr/local/ creates=/usr/local/go/bin/go tar xfvz go1.5.1.linux-amd64.tar.gz
-- name: download etcd v2.1.1
+- name: download etcd v2.2.2
   get_url: 
     validate_certs: no
-    url: https://github.com/coreos/etcd/releases/download/v2.1.1/etcd-v2.1.1-linux-amd64.tar.gz
+    url: https://github.com/coreos/etcd/releases/download/v2.2.2/etcd-v2.2.2-linux-amd64.tar.gz
     dest: /tmp/etcd.tar.gz
 - name: install etcd
-  shell: creates=/usr/bin/etcd tar vxzf /tmp/etcd.tar.gz && mv etcd-v2.1.1-linux-amd64/etcd* /usr/bin
+  shell: creates=/usr/bin/etcd tar vxzf /tmp/etcd.tar.gz && mv etcd-v2.2.2-linux-amd64/etcd* /usr/bin
 - name: setup golang environment 
   copy:
     dest: /etc/profile.d/00golang.sh
