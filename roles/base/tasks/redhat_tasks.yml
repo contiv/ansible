@@ -3,6 +3,7 @@
     update_cache: true
     name: '*'
     state: latest
+  ignore_errors: yes
 
 # install epel-release first to ensure the extra packages can be installed later
 - name: install epel release package (redhat)

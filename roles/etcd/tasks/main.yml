@@ -21,5 +21,16 @@
 - name: copy systemd units for etcd
   copy: src=etcd.service dest=/etc/systemd/system/etcd.service
 
+- name: Open etcd client port with iptables
+  command: /sbin/iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "etcd"
+#  when: "'etcd' not in iptablesrules.stdout"
+#  notify:
+#    - Save iptables rules
+  with_items:
+    - "{{ etcd_client_port1 }}"
+    - "{{ etcd_client_port2 }}"
+    - "{{ etcd_peer_port1 }}"
+    - "{{ etcd_peer_port2 }}"
+
 - name: start etcd
   service: name=etcd state=started

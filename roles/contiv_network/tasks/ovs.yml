@@ -13,6 +13,10 @@
   tags:
     - prebake-for-dev
 
+- name: install openvswitch (Redhat)
+  yum: name=openvswitch state=present
+  when: ansible_os_family == "RedHat"
+
 - name: download ovs binaries (debian)
   get_url:
     validate_certs: "{{ validate_certs }}"
@@ -52,3 +56,11 @@
   with_items:
     - "tcp:127.0.0.1:6640"
     - "ptcp:6640"
+
+- name: disable SE linux
+  shell: "sudo setenforce 0"
+
+- name: Open vxlan vtep port
+  command: /sbin/iptables -I INPUT 1 -p udp --dport {{ item }} -j ACCEPT -m comment --comment "netplugin"
+  with_items:
+    - "{{ vxlan_port }}"

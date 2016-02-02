@@ -69,6 +69,16 @@
   when: run_as == "master"
   run_once: true
 
+- name: Open netplugin and netmaster ports
+  command: /sbin/iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "netplugin"
+  with_items:
+    - "{{ ofnet_master_port }}"
+    - "{{ ofnet_agent_port1 }}"
+    - "{{ ofnet_agent_port2 }}"
+    - "{{ netmaster_port }}"
+    - "{{ gobgp_grpc_port }}"
+    - "{{ bgp_port }}"
+
 # FIXME: need to move the following tasks to correct role
 - name: download contivctl
   get_url:
