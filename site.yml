@@ -14,6 +14,18 @@
   - { role: base }
   - { role: serf }
   - { role: dev }
+  - { role: vagrant }
+
+- hosts: build
+  sudo: true
+  environment: '{{ env }}'
+  roles:
+  - { role: base }
+  - { role: go }
+  - { role: serf }
+  - { role: docker }
+  - { role: vagrant }
+  - { role: ceph-install }
 
 - hosts: volplugin-test
   sudo: true
