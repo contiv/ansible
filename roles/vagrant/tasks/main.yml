@@ -2,6 +2,8 @@
 - name: check for vagrant user
   shell: id vagrant
   register: vagrant_exist
+  tags: 
+    - prebake-for-dev
 
 - name: install bashrc with proxy configs
   template:
@@ -11,6 +13,8 @@
     group: vagrant
     mode: 0755
   when: vagrant_exist
+  tags: 
+    - prebake-for-dev
 
 - name: install bash_profile with swarm configs
   template:
@@ -20,3 +24,11 @@
     group: vagrant
     mode: 0755
   when: vagrant_exist
+  tags:
+    - prebake-for-dev
+
+- name: add vagrant user to docker group
+  command: gpasswd -a vagrant docker
+  when: vagrant_exist
+  tags:
+    - prebake-for-dev
