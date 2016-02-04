@@ -18,3 +18,4 @@ dependencies:
 - { role: contiv_cluster }
 - { role: contiv_network }
 - { role: contiv_storage }
+- { role: go }
