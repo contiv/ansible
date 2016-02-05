@@ -1,0 +1,23 @@
+- name: download Golang v1.5.3
+  get_url:
+    validate_certs: "{{ validate_certs }}"
+    url: https://storage.googleapis.com/golang/go1.5.3.linux-amd64.tar.gz
+    dest: /tmp/go1.5.3.linux-amd64.tar.gz
+    force: no
+  tags:
+    - prebake-for-dev
+
+- name: install Golang
+  shell: tar xfvz /tmp/go1.5.3.linux-amd64.tar.gz
+  args:
+    chdir: /usr/local/
+    creates: /usr/local/go/bin/go
+  tags:
+    - prebake-for-dev
+
+- name: setup golang environment
+  copy:
+    dest: /etc/profile.d/00golang.sh
+    content: "export PATH=/opt/golang/bin:/usr/local/go/bin:$PATH; export GOPATH=/opt/golang"
+  tags:
+    - prebake-for-dev
