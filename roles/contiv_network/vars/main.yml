@@ -7,6 +7,4 @@ ofnet_agent_port2: 9003
 netmaster_port: 9999
 gobgp_grpc_port: 8080
 bgp_port: 179
-docker_remote_port: 2385
-swarm_port: 2375
 vxlan_port: 4789
