@@ -17,5 +17,10 @@
 - name: copy systemd units for swarm
   copy: src=swarm.service dest=/etc/systemd/system/swarm.service
 
+- name: Open swarm api port
+  command: /sbin/iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "swarm"
+  with_items:
+    - "{{ swarm_api_port }}"
+
 - name: start swarm
   shell: systemctl daemon-reload && systemctl start swarm
