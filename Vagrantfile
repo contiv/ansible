@@ -23,32 +23,24 @@ ansible_tags =  ENV["CONTIV_ANSIBLE_TAGS"] || "prebake-for-dev"
 ansible_extra_vars = {
     "env" => host_env,
     "validate_certs" => "no",
-    "control_interface" => "eth1",
 }
 
 puts "Host environment: #{host_env}"
 
 Vagrant.configure(2) do |config|
-    (0..1).each do |n|
+    (0..2).each do |n|
         node_name = "host#{n}"
         config.vm.define node_name do |node|
-            node.vm.hostname = node_name
-            if n == 0 then
+            case n
+            when 0
                 node.vm.box = "puppetlabs/centos-7.2-64-nocm"
                 node.vm.box_version = "1.0.1"
-                node.vm.provision "shell" do |s|
-                    #XXX: seems like the centos box has a broken packer binary which
-                    #get's stuck on issuing 'packer --version' removing it manually here
-                    s.inline = "rm -f /usr/sbin/packer"
-                end
-            else
-                node.vm.box = "ubuntu/xenial64"
-                node.vm.box_version = "20160420.3.0"
-                node.vm.provision "shell" do |s|
-                    #XXX: Ubuntu 16.04 /etc/hosts is not creating entry for hostname,
-                    #so create it here
-                    s.inline = "echo 127.0.1.1 ubuntu-xenial >> /etc/hosts"
-                end
+            when 1
+                node.vm.box = "boxcutter/ubuntu1604"
+                node.vm.box_version = "2.0.18"
+            when 2
+                node.vm.box = "boxcutter/ubuntu1510"
+                node.vm.box_version = "2.0.18"
             end
 
             node.vm.provider "virtualbox" do |vb|
@@ -65,7 +57,7 @@ Vagrant.configure(2) do |config|
             end
             ansible_groups["devtest"] << node_name
             # Run the provisioner after all machines are up
-            if n == 1 then
+            if n == 2 then
                 node.vm.provision 'ansible' do |ansible|
                     ansible.groups = ansible_groups
                     ansible.playbook = ansible_playbook
