@@ -12,3 +12,9 @@
   become: true
   with_items:
     - "{{ docker_api_port }}"
+
+- name: cleanup contiv-compose
+  file: path={{ item }} state=absent
+  with_items:
+    - /tmp/contiv-compose.bz2
+    - /usr/bin/contiv-compose
