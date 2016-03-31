@@ -23,6 +23,7 @@
   when: not collins_exists|success
   tags:
     - prebake-for-dev
+  when: not collins_exists|success
 
 - name: start collins
   service: name=collins state=started
