@@ -25,7 +25,7 @@
 
 - debug: var=ports
 
-- name: permit openvswitch_t type in selinux
+- name: deny openvswitch_t type in selinux
   shell: >
       semanage permissive -d openvswitch_t
   become: true
