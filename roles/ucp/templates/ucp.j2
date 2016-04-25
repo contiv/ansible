@@ -49,16 +49,15 @@ start)
     /usr/bin/docker run --rm -t --name ucp \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -e UCP_ADMIN_USER={{ ucp_admin_user }} -e UCP_ADMIN_PASSWORD={{ ucp_admin_password }} \
+    {% if run_as == "master" -%}
+        docker/ucp join {{ ucp_controller_replica }} --host-address={{ node_addr }} \
+    {% else -%}
         docker/ucp join --host-address={{ node_addr }} \
+    {% endif %}
           --swarm-port={{ ucp_swarm_port }} --controller-port={{ ucp_controller_port }} \
           --image-version={{ ucp_version }} \
           --url="https://{{ service_vip }}:443" \
-    {% if run_as == "master" -%}
-          --fingerprint=`cat "{{ ucp_remote_dir }}"/"{{ ucp_fingerprint_file }}"` \
-          {{ ucp_controller_replica }}
-    {% else -%}
           --fingerprint=`cat "{{ ucp_remote_dir }}"/"{{ ucp_fingerprint_file }}"`
-    {% endif %}
     {% endif %}
 
     # now just sleep to keep the service up
