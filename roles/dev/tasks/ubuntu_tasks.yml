@@ -6,7 +6,6 @@
     - vim-nox
     - git
     - mercurial
-    - build-essential
     - perl
     - time
     - tcpdump

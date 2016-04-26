@@ -16,3 +16,4 @@
     - librbd-dev
     - bash-completion
     - python-selinux
+    - build-essential
