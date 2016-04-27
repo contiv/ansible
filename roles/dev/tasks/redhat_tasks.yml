@@ -7,7 +7,6 @@
     - vim
     - git
     - mercurial
-    - gcc
     - perl
     - time
     - tcpdump

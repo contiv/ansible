@@ -10,6 +10,7 @@
     update_cache: true
     state: latest
   with_items:
+    - gcc
     - ntp
     - unzip
     - bzip2
@@ -21,3 +22,17 @@
 
 - name: install and start ntp
   service: name=ntpd state=started enabled=yes
+
+- name: enable NFS server
+  service:
+    name: nfs-server
+    state: started
+    enabled: yes
+  when: use_nfs
+
+- name: enable NFS client
+  service:
+    name: nfs-client.target
+    state: started
+    enabled: yes
+  when: use_nfs
