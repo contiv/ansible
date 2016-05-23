@@ -135,7 +135,20 @@ start)
 
     #start etcd
     echo "==> starting etcd with environment:" `env`
-    /usr/bin/etcd
+    /usr/bin/docker run -t --rm --net=host --name etcd \
+        -e ETCD_NAME=${ETCD_NAME} \
+        -e ETCD_DATA_DIR=${ETCD_DATA_DIR} \
+        -e ETCD_INITIAL_CLUSTER_TOKEN=${ETCD_INITIAL_CLUSTER_TOKEN} \
+        -e ETCD_LISTEN_CLIENT_URLS=${ETCD_LISTEN_CLIENT_URLS} \
+        -e ETCD_ADVERTISE_CLIENT_URLS=${ETCD_ADVERTISE_CLIENT_URLS} \
+        -e ETCD_INITIAL_ADVERTISE_PEER_URLS=${ETCD_INITIAL_ADVERTISE_PEER_URLS} \
+        -e ETCD_LISTEN_PEER_URLS=${ETCD_LISTEN_PEER_URLS} \
+        -e ETCD_HEARTBEAT_INTERVAL=${ETCD_HEARTBEAT_INTERVAL} \
+        -e ETCD_ELECTION_TIMEOUT=${ETCD_ELECTION_TIMEOUT} \
+        -e ETCD_INITIAL_CLUSTER=${ETCD_INITIAL_CLUSTER} \
+        -e ETCD_INITIAL_CLUSTER_STATE=${ETCD_INITIAL_CLUSTER_STATE} \
+        -e ETCD_PROXY=${ETCD_PROXY} \
+        quay.io/coreos/etcd:{{ etcd_version }}
     ;;
 
 stop)
@@ -152,11 +165,9 @@ stop)
     {% else -%}
     {{ remove_member(peer_addr=etcd_master_addr) }}
     {% endif -%}
-    ;;
 
-post-stop)
-    #XXX: is there a case when we should not cleanup the data dir on stop?
-    rm -rf $ETCD_DATA_DIR
+    /usr/bin/docker stop etcd
+    /usr/bin/docker rm etcd
     ;;
 
 *)
