@@ -15,7 +15,7 @@ http://{{ addr }}:{{ etcd_client_port1 }},http://{{ addr }}:{{ etcd_client_port2
 {%- macro get_peer_addr() -%}
     {# we can't use a simple filter as shown, as it needs python 2.8.
      # So resorting to loop below to get a peer.
-    {%- set peer_name=groups[etcd_peers_group]|reject("equalto", node_name)|first -%} #}
+     #{%- set peer_name=groups[etcd_peers_group]|reject("equalto", node_name)|first -%} #}
     {%- set peers=[] -%}
     {%- for host in groups[etcd_peers_group] -%}
         {%- if host != node_name -%}
@@ -124,6 +124,15 @@ export ETCD_ELECTION_TIMEOUT={{ etcd_election_timeout }}
 set -x
 case $1 in
 start)
+    # check if docker is running, else fail early.
+    # this is done instead of adding a 'Requires' dependency for docker in
+    # unit file to ensure that the etcd service starts as soon as docker starts
+    # even after a manual restart of docker.
+    out=$(/usr/bin/docker ps 2>&1 | grep -o "Cannot connect to the Docker daemon")
+    if [ "${out}" == "Cannot connect to the Docker daemon" ]; then
+        echo "docker is not running."
+        exit 1
+    fi
     {% if run_as == "worker" -%}
     {{ add_proxy() }}
     {% elif etcd_init_cluster -%}
@@ -158,7 +167,6 @@ stop)
         {% set peer_addr=get_peer_addr() -%}
         {% if peer_addr == "" -%}
         echo "==> no peer found or single member cluster at time of commission"
-        exit 1
         {% else -%}
         {{ remove_member(peer_addr=peer_addr) }}
         {% endif %}
