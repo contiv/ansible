@@ -92,6 +92,9 @@ start)
 stop)
     # don't `set -e` as we shouldn't stop on error
 
+    #remove the fifo file
+    rm -f "{{ ucp_remote_dir }}/{{ ucp_fifo_file }}"
+
     #stop the ucp containers and associated volumes
     docker ps -a | grep 'ucp-' | awk '{print $1}' | xargs docker stop
 
