@@ -12,5 +12,6 @@
 - name: start aci-gw container
   service: name=aci-gw state=started
 
+# XXX: revert this to use contivctl once https://github.com/contiv/contivctl/issues/3 is fixed
 - name: set aci mode
-  shell: contivctl net global set --fabric-mode aci
+  shell: netctl global set --fabric-mode aci
