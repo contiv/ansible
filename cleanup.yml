@@ -16,11 +16,11 @@
         - "etcd"
     - include: roles/{{ item }}/tasks/cleanup.yml
       with_items:
+        - ucarp
         - contiv_network
         - contiv_storage
         - swarm
         - ucp
         - etcd
-        - ucarp
         - docker
       ignore_errors: yes
