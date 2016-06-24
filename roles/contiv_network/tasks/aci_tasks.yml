@@ -12,5 +12,12 @@
 - name: start aci-gw container
   service: name=aci-gw state=started
 
+- name: Contiv | Wait for netmaster
+  action: shell netctl tenant ls
+  register: tenant_result
+  until: tenant_result.stdout.find("default") != -1
+  retries: 5
+  delay: 5
+
 - name: set aci mode
-  shell: contivctl network global set --fabric-mode aci
+  shell: netctl global set --fabric-mode aci
