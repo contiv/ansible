@@ -21,3 +21,4 @@
 
 - name: set aci mode
   shell: netctl global set --fabric-mode aci
+  run_once: true
