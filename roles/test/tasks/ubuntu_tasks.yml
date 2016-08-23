@@ -34,7 +34,7 @@
 - name: download vagrant (debian)
   get_url:
     validate_certs: "{{ validate_certs }}"
-    url: https://releases.hashicorp.com/vagrant/1.8.1/vagrant_{{ vagrant_version }}_x86_64.deb
+    url: https://releases.hashicorp.com/vagrant/{{ vagrant_version }}/vagrant_{{ vagrant_version }}_x86_64.deb
     dest: /tmp/vagrant_{{ vagrant_version }}.deb
     force: no
 
