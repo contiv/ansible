@@ -8,9 +8,9 @@ Requires=docker.socket
 TimeoutStartSec=5m
 Type=notify
 {% if docker_device != "" %}
-ExecStart=/usr/bin/docker daemon --storage-opt dm.thinpooldev=/dev/mapper/contiv-dockerthin -H fd:// --cluster-store=etcd://localhost:{{ etcd_client_port1 }}
+ExecStart=/usr/bin/docker daemon --storage-opt dm.thinpooldev=/dev/mapper/contiv-dockerthin -H fd:// --cluster-store=etcd://localhost:{{ etcd_client_port1 }} --add-runtime cor=/usr/bin/cc-oci-runtime --default-runtime=runc
 {% else %}
-ExecStart=/usr/bin/docker daemon -H fd:// --cluster-store=etcd://localhost:{{ etcd_client_port1 }}
+ExecStart=/usr/bin/docker daemon -H fd:// --cluster-store=etcd://localhost:{{ etcd_client_port1 }} --add-runtime cor=/usr/bin/cc-oci-runtime --default-runtime=runc
 {% endif %}
 MountFlags={{ docker_mount_flags }}
 LimitNOFILE=1048576
