@@ -28,7 +28,7 @@ ansible_extra_vars = {
 puts "Host environment: #{host_env}"
 
 Vagrant.configure(2) do |config|
-    (0..2).each do |n|
+    2.times do |n|
         node_name = "host#{n}"
         config.ssh.insert_key = false
         config.ssh.private_key_path = "./test/files/insecure_private_key"
@@ -39,9 +39,6 @@ Vagrant.configure(2) do |config|
                 node.vm.box_version = "1.0.1"
             when 1
                 node.vm.box = "boxcutter/ubuntu1604"
-                node.vm.box_version = "2.0.18"
-            when 2
-                node.vm.box = "boxcutter/ubuntu1510"
                 node.vm.box_version = "2.0.18"
             end
 
