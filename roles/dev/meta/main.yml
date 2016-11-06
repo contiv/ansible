@@ -12,7 +12,6 @@
 # 'prebake-for-dev' tag in respective roles.
 
 dependencies:
-- { role: ceph-install, tags: 'prebake-for-dev' }
 - { role: ansible, tags: 'prebake-for-dev' }
 - { role: docker }
 - { role: etcd }
