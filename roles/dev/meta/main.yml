@@ -12,12 +12,9 @@
 # 'prebake-for-dev' tag in respective roles.
 
 dependencies:
-- { role: ceph-install, tags: 'prebake-for-dev' }
 - { role: ansible, tags: 'prebake-for-dev' }
 - { role: docker }
 - { role: etcd }
 - { role: swarm }
 - { role: ucp }
-- { role: contiv_cluster }
 - { role: contiv_network }
-- { role: contiv_storage }

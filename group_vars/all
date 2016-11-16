@@ -16,14 +16,17 @@ ceph_stable_ice_kmod: ""
 #host variables
 node_name: "{{ inventory_hostname }}"
 node_addr: "{{ hostvars[inventory_hostname]['ansible_' + control_interface]['ipv4']['address'] }}"
-
 validate_certs: "yes"
+service_vip: "{{ netmaster_ip }}"
 
 # following variables are used in one or more roles, but have no good default value to pick from.
 # Leaving them as commented so that playbooks can fail early due to variable not defined error.
 
 # env:
-# service_vip:
 # control_interface:
+
+## the comparison this way allows us to override ucarp when netmaster_ip is
+## non-nil. If it is nil, service_ip should be set to something unique.
+# netmaster_ip:
 
 host_capability: "can-run-user-containers, storage"
