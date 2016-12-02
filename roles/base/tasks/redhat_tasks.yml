@@ -1,8 +1,7 @@
 # install epel-release first to ensure the extra packages can be installed later
 - name: install epel release package (redhat)
   yum:
-    name: epel-release
-    state: latest
+    name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
 
 - name: install/upgrade base packages (redhat)
   yum:
