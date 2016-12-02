@@ -10,6 +10,10 @@ variable "ami" {
   default = "ami-af4333cf"
 }
 
+variable "ssh_user" {
+  default = "centos"
+}
+
 variable "aws_key_name" {
   description = "The name of your SSH key on AWS"
   type        = "string"
@@ -153,7 +157,7 @@ resource "null_resource" "configure-interfaces" {
   }
 
   connection {
-    user = "centos"
+    user = "${var.ssh_user}"
     host = "${element(aws_eip.netplugin-eip.*.public_ip, count.index)}"
   }
 
@@ -168,7 +172,7 @@ resource "null_resource" "ansible" {
             [service-worker]
             ${join("\n", aws_eip.netplugin-eip.*.public_ip)}
             ' >/tmp/hosts && \\
-            ansible-playbook -e '{ \"netplugin_if\": \"eth2\", \"netmaster_ip\": \"10.1.10.10\", \"control_interface\": \"eth1\", \"env\": {} }' -i /tmp/hosts --ssh-extra-args='-o StrictHostKeyChecking=false' -T 300 -u centos site.yml"
+            ansible-playbook -e '{ \"netplugin_if\": \"eth2\", \"netmaster_ip\": \"10.1.10.10\", \"control_interface\": \"eth1\", \"env\": {} }' -i /tmp/hosts --ssh-extra-args='-o StrictHostKeyChecking=false' -T 300 -u ${var.ssh_user} site.yml"
   }
 
   triggers {
