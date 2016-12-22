@@ -1,0 +1,9 @@
+---
+
+# Role defaults for golang. Installation of specific version of golang
+# also things needed to compile netplugin code
+# setting up GOPATH and PATH variables
+
+golang_version: "1.7.4"
+golang_download_url: "https://storage.googleapis.com/golang/go{{ golang_version }}.linux-amd64.tar.gz"
+golang_dest_file: "/tmp/go{{ golang_version }}.linux-amd64.tar.gz"

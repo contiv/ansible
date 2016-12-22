@@ -92,5 +92,6 @@
   - { role: base }
   - { role: docker, etcd_client_port1: 2379 }
   - { role: etcd, run_as: master }
+  - { role: golang, run_as: master }
   - { role: scheduler_stack, run_as: master }
   - { role: contiv_network, run_as: master }
