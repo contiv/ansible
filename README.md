@@ -1,4 +1,4 @@
-[![Build Status](http://contiv.ngrok.io/view/Ansible%20CI/job/Ansible%20Push%20Build%20Master/badge/icon)](http://contiv.ngrok.io/view/Ansible%20CI/job/Ansible%20Push%20Build%20Master/)
+[![Build Status](http://contiv-ci.ngrok.io/view/Ansible%20CI/job/Ansible%20Push%20Build%20Master/badge/icon)](http://contiv.ngrok.io/view/Ansible%20CI/job/Ansible%20Push%20Build%20Master/)
 
 # Ansible Playbooks
 
