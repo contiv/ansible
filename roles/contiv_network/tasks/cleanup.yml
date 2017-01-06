@@ -29,3 +29,5 @@
     - "{{ bgp_port }}"
 
 - include: ovs_cleanup.yml
+  static: no
+  ignore_errors: yes
