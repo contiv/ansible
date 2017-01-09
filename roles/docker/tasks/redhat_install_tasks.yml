@@ -9,11 +9,8 @@
     validate_certs: "{{ validate_certs }}"
 
 - name: add docker CS-engine repos (redhat)
-  shell: yum-config-manager --add-repo https://packages.docker.com/{{ item }}/yum/repo/main/centos/7
+  shell: yum-config-manager --add-repo https://yum.dockerproject.org/repo/main/centos/7/
   become: true
-  with_items:
-    - "1.10"
-    - "1.11"
 
 - name: remove docker (redhat)
   yum: name=docker-engine state=absent
