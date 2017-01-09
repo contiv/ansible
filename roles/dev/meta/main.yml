@@ -15,6 +15,7 @@ dependencies:
 - { role: ansible, tags: 'prebake-for-dev' }
 - { role: docker }
 - { role: etcd }
+- { role: consul }
 - { role: swarm }
 - { role: ucp }
 - { role: contiv_network }

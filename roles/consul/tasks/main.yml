@@ -1,14 +1,18 @@
-- name: download consul binary
+- name: download consul binary {{ consul_version }}
   get_url:
     validate_certs: "{{ validate_certs }}"
     url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip"
     dest: "/tmp/consul_{{ consul_version }}_linux_amd64.zip"
+  tags:
+     - prebake-for-dev
 
-- name: install consul
+- name: install consul {{ consul_version }}
   unarchive:
     copy: no
     src: "/tmp/consul_{{ consul_version }}_linux_amd64.zip"
     dest: /usr/bin
+  tags:
+    - prebake-for-dev
 
 - name: install consul run script
   template:
