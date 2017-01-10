@@ -7,6 +7,9 @@
 contiv_network_mode: "standalone" # Accepted values: standalone, aci
 netplugin_mode: "docker" # Accepted values: docker, kubernetes
 fwd_mode: "bridge" #Accepted values: bridge , routing
+
+cluster_store: "etcd://127.0.0.1:2379"
+
 ofnet_master_port: 9001
 ofnet_agent_port1: 9002
 ofnet_agent_port2: 9003
