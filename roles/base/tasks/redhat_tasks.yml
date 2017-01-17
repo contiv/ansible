@@ -1,8 +1,9 @@
 # install epel-release first to ensure the extra packages can be installed later
-- name: install epel release package (redhat)
+- name: install epel release package (centos)
   yum:
     name: epel-release
     state: latest
+  when: ansible_distribution != "RedHat"
 
 - name: install/upgrade base packages (redhat)
   yum:
