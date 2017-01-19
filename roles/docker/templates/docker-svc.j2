@@ -1,17 +1,27 @@
 [Unit]
 Description=Docker Application Container Engine
 Documentation=https://docs.docker.com
-After=network.target docker.socket
-Requires=docker.socket
+After=network.target
 
 [Service]
 TimeoutStartSec=5m
 Type=notify
 {% if docker_device != "" %}
-ExecStart=/usr/bin/docker daemon --storage-opt dm.thinpooldev=/dev/mapper/contiv-dockerthin -H fd:// --cluster-store=etcd://localhost:{{ etcd_client_port1 }}
+{% set docker_devmapper_opts = "--storage-opt dm.thinpooldev=/dev/mapper/contiv-dockerthin" %}
 {% else %}
-ExecStart=/usr/bin/docker daemon -H fd:// --cluster-store=etcd://localhost:{{ etcd_client_port1 }}
+{% set docker_devmapper_opts = "" %}
 {% endif %}
+
+{% if docker_version | version_compare('1.12', '>=') %}
+{% set docker_daemon_startup = "dockerd" %}
+{% else %}
+{% set docker_daemon_startup = "docker daemon" %}
+{% endif %}
+
+{% set docker_sockets = "-H tcp://0.0.0.0:" + docker_api_port|string + " -H unix:///var/run/docker.sock" %}
+{% set cluster_store = "--cluster-store=etcd://localhost:" + etcd_client_port1|string %}
+
+ExecStart=/usr/bin/{{ docker_daemon_startup }} {{ docker_devmapper_opts }} {{ docker_sockets }} {{ cluster_store }}
 MountFlags={{ docker_mount_flags }}
 LimitNOFILE=1048576
 LimitNPROC=1048576
