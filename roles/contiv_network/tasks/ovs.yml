@@ -52,7 +52,7 @@
     - prebake-for-dev
 
 - name: start ovs service
-  service: "name=openvswitch enabled=yes state=started"
+  service: name=openvswitch daemon_reload=yes enabled=yes state=started
   when: ansible_os_family == "RedHat"
 
 - name: setup ovs

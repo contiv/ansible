@@ -6,3 +6,6 @@ After=auditd.service systemd-user-sessions.service time-sync.target etcd.service
 EnvironmentFile=/etc/default/volmaster
 ExecStart=/usr/bin/volmaster $VOLMASTER_ARGS
 KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

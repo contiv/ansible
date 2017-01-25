@@ -8,3 +8,6 @@ RestartSec=10s
 ExecStart=/usr/bin/consul.sh start
 ExecStop=/usr/bin/consul.sh stop
 KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

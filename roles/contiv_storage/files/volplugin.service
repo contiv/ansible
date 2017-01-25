@@ -7,3 +7,6 @@ EnvironmentFile=/etc/default/volplugin
 ExecStart=/usr/bin/volplugin $VOLPLUGIN_ARGS
 ExecStopPost=/usr/bin/rm -f /run/docker/plugins/volplugin.sock
 KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target
