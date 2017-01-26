@@ -1,6 +1,6 @@
 - name: Set Go version
   set_fact:
-    go_version: "1.7.4"
+    go_version: "1.7.5"
 
 - name: "download Golang {{ go_version }}"
   get_url:
