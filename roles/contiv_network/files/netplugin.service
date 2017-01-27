@@ -7,3 +7,8 @@ EnvironmentFile=/etc/default/netplugin
 ExecStart=/usr/bin/netplugin $NETPLUGIN_ARGS
 ExecStopPost=/usr/bin/rm -f /run/docker/plugins/netplugin.sock
 KillMode=control-group
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

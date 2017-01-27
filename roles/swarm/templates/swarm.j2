@@ -10,14 +10,15 @@ case $1 in
 start)
     echo starting swarm as {{ run_as }} on {{ node_name }}[{{ node_addr }}]
     {% if run_as == "master" -%}
-    /usr/bin/docker run -t -d -p {{ swarm_api_port }}:{{ swarm_api_port }} --name=swarm-manager \
+    /usr/bin/docker run -t -d -p {{ swarm_api_port }}:{{ swarm_api_port }} \
+        --net=host --name=swarm-manager \
         swarm:{{ swarm_version }} manage \
         -H :{{ swarm_api_port }} \
         --strategy {{ swarm_strategy }} \
         --replication --advertise={{ node_addr }}:{{ swarm_api_port }} \
         etcd://{{ node_addr }}:{{ etcd_client_port1 }}
     {% endif %}
-    /usr/bin/docker run -t --name=swarm-agent \
+    /usr/bin/docker run -t --net=host --name=swarm-agent \
         swarm:{{ swarm_version }} join \
         --advertise={{ node_addr }}:{{ docker_api_port }} \
         etcd://{{ node_addr }}:{{ etcd_client_port1 }}
