@@ -1,0 +1,6 @@
+auth_proxy_image: "contiv/auth_proxy:1.0.0-alpha"
+auth_proxy_port: 10000
+contiv_certs: "/var/contiv/certs"
+auth_proxy_cert: "{{ contiv_certs }}/auth_proxy_cert.pem"
+auth_proxy_key: "{{ contiv_certs }}/auth_proxy_key.pem"
+auth_proxy_datastore: "{{ cluster_store }}"

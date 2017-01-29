@@ -1,0 +1,23 @@
+---
+# This playbook performs service cleanup for auth_proxy.
+#
+# Note: cleanup is not expected to fail, so we set ignore_errors to yes here
+
+- hosts: netplugin-master
+  become: true
+  tasks:
+    - include_vars: roles/{{ item }}/defaults/main.yml
+      with_items:
+        - "contiv_network"
+        - "contiv_storage"
+        - "swarm"
+        - "kubernetes"
+        - "ucp"
+        - "docker"
+        - "etcd"
+        - "auth_proxy"
+    - include: roles/{{ item }}/tasks/cleanup.yml
+      with_items:
+        - auth_proxy
+      static: no
+      ignore_errors: yes
