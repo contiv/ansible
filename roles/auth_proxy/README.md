@@ -27,13 +27,3 @@ Example Playbook
   become: true
       roles:
         - { role: auth_proxy, auth_proxy_port: 10000, auth_proxy_datastore: etcd://netmaster:2379 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-Please see contiv.io for more information.
