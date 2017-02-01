@@ -28,4 +28,4 @@
   copy: src=swarm.service dest=/etc/systemd/system/swarm.service
 
 - name: start swarm
-  service: name=swarm daemon_reload=yes state=started enabled=yes
+  systemd: name=swarm daemon_reload=yes state=started enabled=yes
