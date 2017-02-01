@@ -54,7 +54,7 @@
   file: src=/usr/bin/contiv/netplugin/contrib/completion/bash/netctl dest=/etc/bash_completion.d/netctl state=link
 
 - name: start netplugin
-  shell: systemctl daemon-reload && systemctl start netplugin
+  service: name=netplugin daemon_reload=yes state=started enabled=yes
 
 - name: setup netmaster host alias
   lineinfile:
@@ -83,7 +83,7 @@
   when: run_as == "master"
 
 - name: start netmaster
-  shell: systemctl daemon-reload && systemctl start netmaster
+  service: name=netmaster daemon_reload=yes state=started enabled=yes
   when: run_as == "master"
 
 # FIXME: need to move the following tasks to correct role

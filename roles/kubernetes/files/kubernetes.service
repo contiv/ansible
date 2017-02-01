@@ -6,3 +6,6 @@ After=auditd.service systemd-user-sessions.service time-sync.target etcd.service
 ExecStart=/usr/bin/kubernetes.sh start
 ExecStop=/usr/bin/kubernetes.sh stop
 KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,5 @@
+# netplugin-master hosts set up the proxy
+- hosts: netplugin-master
+  become: true
+  roles:
+    - { role: auth_proxy }

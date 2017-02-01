@@ -10,7 +10,7 @@
   copy: src=aci-gw.service dest=/etc/systemd/system/aci-gw.service
 
 - name: start aci-gw container
-  service: name=aci-gw state=started
+  service: name=aci-gw daemon_reload=yes state=started enabled=yes
 
 - name: set aci mode
   shell: netctl global set --fabric-mode aci

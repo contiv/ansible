@@ -95,6 +95,7 @@
   service:
     name: docker
     state: started
+    enabled: yes
   tags:
     - prebake-for-dev
 
