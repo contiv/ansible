@@ -172,6 +172,7 @@ start)
     #start etcd
     echo "==> starting etcd with environment:" `env`
     /usr/bin/docker run -t --rm --net=host --name etcd \
+        -v ${ETCD_DATA_DIR}:${ETCD_DATA_DIR} \
         -e ETCD_NAME=${ETCD_NAME} \
         -e ETCD_DATA_DIR=${ETCD_DATA_DIR} \
         -e ETCD_INITIAL_CLUSTER_TOKEN=${ETCD_INITIAL_CLUSTER_TOKEN} \
