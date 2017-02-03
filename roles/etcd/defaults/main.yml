@@ -11,3 +11,4 @@ etcd_version: "v2.3.7"
 etcd_heartbeat_interval: 1000
 etcd_election_timeout: 10000
 etcd_data_dir: /var/lib/etcd
+etcd_reset_state: false
