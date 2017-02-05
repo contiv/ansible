@@ -18,19 +18,15 @@
     - "{{ bgp_port }}"
 
 - name: copy netmaster and netplugin
-  copy: src="{{ contiv_standalone_binaries }}/{{ contiv_network_tar_file }}" dest="{{ contiv_network_dest_file }}" 
-  ignore_errors: yes
-
-- name: check if netplugin release is distributed locally
-  stat: path="{{ contiv_network_dest_file }}" 
-  register: local_contiv_tar
+  copy: src="{{ contiv_standalone_binaries }}/{{ contiv_network_tar_file }}" dest="{{ contiv_network_dest_file }}"
+  when: contiv_network_local_install == True 
 
 - name: download netmaster and netplugin
   get_url:
     validate_certs: "{{ validate_certs }}"
     url: "{{ contiv_network_src_file }}"
     dest: "{{ contiv_network_dest_file }}" 
-  when: local_contiv_tar.stat.exists is not defined or local_contiv_tar.stat.exists == False
+  when: contiv_network_local_install == False
 
 - name: ensure netplugin directory exists
   file: path=/usr/bin/contiv/netplugin state=directory

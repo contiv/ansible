@@ -3,13 +3,7 @@
 
 - name: copy ovs file (redhat)
   copy: src={{ contiv_standalone_binaries }}/openvswitch-2.3.1-2.el7.x86_64.rpm dest=/tmp/openvswitch-2.3.1-2.el7.x86_64.rpm 
-  when: ansible_os_family == "RedHat"
-  ignore_errors: yes
-
-- name: check if ovs release is distributed locally (redhat)
-  stat: path=/tmp/openvswitch-2.3.1-2.el7.x86_64.rpm
-  register: local_ovs_binaries
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and contiv_network_local_install == True
 
 - name: download ovs binaries (redhat)
   get_url:
@@ -21,7 +15,7 @@
         url: "https://cisco.box.com/shared/static/zzmpe1zesdpf270k9pml40rlm4o8fs56.rpm",
         dest: /tmp/openvswitch-2.3.1-2.el7.x86_64.rpm
       }
-  when: ansible_os_family == "RedHat" and (local_ovs_binaries.stat.exists is not defined or local_ovs_binaries.stat.exists == False)
+  when: ansible_os_family == "RedHat" and contiv_network_local_install == False
   tags:
     - prebake-for-dev
 
@@ -34,23 +28,11 @@
 
 - name: copy ovs common file (debian)
   copy: src={{ contiv_standalone_binaries }}/v1dvgoboo5zgqrtn6tu27vxeqtdo2bdl.deb dest=/tmp/ovs-common.deb 
-  when: ansible_os_family == "Debian"
-  ignore_errors: yes
+  when: ansible_os_family == "Debian" and contiv_network_local_install == True
 
 - name: copy ovs switch file (debian)
   copy: src={{ contiv_standalone_binaries }}/ymbuwvt2qprs4tquextw75b82hyaxwon.deb dest=/tmp/ovs-switch.deb 
-  when: ansible_os_family == "Debian"
-  ignore_errors: yes
-
-- name: check if ovs common release is distributed locally
-  stat: path=/tmp/ovs-common.deb
-  register: local_ovs_common
-  when: ansible_os_family == "Debian"
-
-- name: check if ovs switch release is distributed locally
-  stat: path=/tmp/ovs-switch.deb
-  register: local_ovs_switch
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and contiv_network_local_install == True
 
 - name: download ovs binaries (debian)
   get_url:
@@ -66,10 +48,7 @@
         url: "https://cisco.box.com/shared/static/ymbuwvt2qprs4tquextw75b82hyaxwon.deb",
         dest: /tmp/ovs-switch.deb
       }
-  when: ansible_os_family == "Debian" and (local_ovs_common.stat.exists is not defined or 
-                                           local_ovs_common.stat.exists == False or 
-                                           local_ovs_switch.stat.exists is not defined or 
-                                           local_ovs_switch.stat.exists == False)
+  when: ansible_os_family == "Debian" and contiv_network_local_install == False
   tags:
     - prebake-for-dev
 

@@ -4,11 +4,17 @@
 # case where the image is not built in
 - name: copy aci-gw image
   copy: src={{ contiv_standalone_binaries }}/aci-gw-image.tar dest=/tmp/aci-gw-image.tar
-  ignore_errors: yes
+  when: contiv_network_local_install == True
 
 - name: load aci-gw image
   shell: docker load -i /tmp/aci-gw-image.tar
-  ignore_errors: yes
+  when: contiv_network_local_install == True
+
+# For non-local installs pull the aci-gw image. Ignore errors if the image pull times out.
+# It will be loaded on docker run
+- name: pull aci-gw image
+  shell: docker pull {{ aci_gw_image }}
+  when: contiv_network_local_install == False
 
 - name: copy shell script for starting aci-gw
   template: src=aci_gw.j2 dest=/usr/bin/aci_gw.sh mode=u=rwx,g=rx,o=rx

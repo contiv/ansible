@@ -36,3 +36,4 @@ apic_epg_bridge_domain: "not_specified"
 apic_contracts_unrestricted_mode: "no"
 
 contiv_network_k8s_config_dir: "/opt/contiv/config/"
+contiv_network_local_install: False

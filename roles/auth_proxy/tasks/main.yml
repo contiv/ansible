@@ -5,11 +5,11 @@
 # case where the image is not built in
 - name: copy auth-proxy image
   copy: src={{ auth_proxy_binaries }}/auth-proxy-image.tar dest=/tmp/auth-proxy-image.tar
-  ignore_errors: yes
+  when: auth_proxy_local_install == True
 
 - name: load auth-proxy image
   shell: docker load -i /tmp/auth-proxy-image.tar
-  ignore_errors: yes
+  when: auth_proxy_local_install == True
 
 - name: create cert folder for proxy
   file: path=/var/contiv/certs state=directory
