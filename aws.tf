@@ -52,6 +52,10 @@ variable "aws_region" {
     default = "us-west-1"
 }
 
+variable "aws_availability_zone" {
+    default = "us-west-1b"
+}
+
 # ============================================
 # EC2 Instance definition
 
@@ -126,7 +130,7 @@ resource "aws_subnet" "netplugin_vxlan_subnet" {
     # creates a different subnet using buildnum to generate a number
     # between 100 and 200
     cidr_block = "172.31.${var.buildnum%100 + 100}.0/24"
-    availability_zone = "us-west-1b"
+    availability_zone = "${var.aws_availability_zone}"
 }
 
 
