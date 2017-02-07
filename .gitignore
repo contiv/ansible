@@ -8,3 +8,4 @@ fetch/*
 .vagrant*
 
 terraform.tfstate*
+terraform.tfvars
