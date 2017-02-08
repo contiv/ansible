@@ -16,8 +16,5 @@
 - name: copy systemd units for auth-proxy
   copy: src=auth-proxy.service dest=/etc/systemd/system/auth-proxy.service
 
-- name: initialize auth-proxy
-  shell: /usr/bin/auth_proxy.sh init
-
 - name: start auth-proxy container
   service: name=auth-proxy daemon_reload=yes state=started enabled=yes
