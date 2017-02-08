@@ -1,6 +1,14 @@
 ---
 # This play contains tasks for cleaning up docker
 
+- name: remove all containers
+  shell: unset DOCKER_HOST && docker rm -f -v $(docker ps -a -q)
+  when: docker_reset_container_state == true
+
+- name: remove all images
+  shell: unset DOCKER_HOST && docker rmi -f $(docker images -q)
+  when: docker_reset_image_state == true
+
 - name: stop docker
   service: name=docker state=stopped
 

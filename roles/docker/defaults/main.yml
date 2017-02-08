@@ -14,3 +14,5 @@ docker_cs_engine_supported_versions_ubuntu:
     "Core": [""] # needed for redhat installations due to templating
     "Maipo": [""] # needed for redhat installations due to templating
 docker_mount_flags: "shared"
+docker_reset_container_state: false
+docker_reset_image_state: false
