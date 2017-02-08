@@ -1,6 +1,16 @@
 ---
 # tasks file for auth_proxy
 
+# Load the auth-proxy-image from local tar. Ignore any errors to handle the
+# case where the image is not built in
+- name: copy auth-proxy image
+  copy: src={{ auth_proxy_binaries }}/auth-proxy-image.tar dest=/tmp/auth-proxy-image.tar
+  when: auth_proxy_local_install == True
+
+- name: load auth-proxy image
+  shell: docker load -i /tmp/auth-proxy-image.tar
+  when: auth_proxy_local_install == True
+
 - name: create cert folder for proxy
   file: path=/var/contiv/certs state=directory
 
@@ -20,4 +30,4 @@
   shell: /usr/bin/auth_proxy.sh init
 
 - name: start auth-proxy container
-  service: name=auth-proxy daemon_reload=yes state=started enabled=yes
+  systemd: name=auth-proxy daemon_reload=yes state=started enabled=yes

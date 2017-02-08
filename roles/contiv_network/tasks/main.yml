@@ -17,11 +17,16 @@
     - "{{ gobgp_grpc_port }}"
     - "{{ bgp_port }}"
 
+- name: copy netmaster and netplugin
+  copy: src="{{ contiv_standalone_binaries }}/{{ contiv_network_tar_file }}" dest="{{ contiv_network_dest_file }}"
+  when: contiv_network_local_install == True 
+
 - name: download netmaster and netplugin
   get_url:
     validate_certs: "{{ validate_certs }}"
     url: "{{ contiv_network_src_file }}"
     dest: "{{ contiv_network_dest_file }}" 
+  when: contiv_network_local_install == False
 
 - name: ensure netplugin directory exists
   file: path=/usr/bin/contiv/netplugin state=directory
@@ -54,7 +59,7 @@
   file: src=/usr/bin/contiv/netplugin/contrib/completion/bash/netctl dest=/etc/bash_completion.d/netctl state=link
 
 - name: start netplugin
-  service: name=netplugin daemon_reload=yes state=started enabled=yes
+  systemd: name=netplugin daemon_reload=yes state=started enabled=yes
 
 - name: setup netmaster host alias
   lineinfile:
@@ -83,7 +88,7 @@
   when: run_as == "master"
 
 - name: start netmaster
-  service: name=netmaster daemon_reload=yes state=started enabled=yes
+  systemd: name=netmaster daemon_reload=yes state=started enabled=yes
   when: run_as == "master"
 
 # FIXME: need to move the following tasks to correct role
