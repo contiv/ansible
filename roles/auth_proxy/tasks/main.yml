@@ -1,5 +1,12 @@
 ---
 # tasks file for auth_proxy
+- name: setup iptables for auth proxy
+  shell: >
+      ( iptables -L INPUT | grep "{{ auth_proxy_rule_comment }} ({{ item }})" ) || \
+      iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "{{ auth_proxy_rule_comment }} ({{ item }})"
+  become: true
+  with_items:
+    - "{{ auth_proxy_port }}"
 
 # Load the auth-proxy-image from local tar. Ignore any errors to handle the
 # case where the image is not built in
