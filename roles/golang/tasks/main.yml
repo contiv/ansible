@@ -1,0 +1,15 @@
+# This role contains tasks for downloading and installing golang.
+- name: download golang
+  get_url:
+    url: "{{ golang_download_url }}"
+    dest: "{{ golang_dest_file }}" 
+
+- name: install golang
+  shell: tar vxzf {{ golang_dest_file }}
+  args:
+    chdir: /usr/local
+
+- name: set PATH variable for golang
+  environment:
+    PATH: $PATH:/usr/local/go/bin
+
