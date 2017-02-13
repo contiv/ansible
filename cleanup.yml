@@ -5,6 +5,7 @@
 
 - hosts: all
   become: true
+  ignore_errors: yes
   tasks:
     - include_vars: roles/{{ item }}/defaults/main.yml
       with_items:
