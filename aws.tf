@@ -190,4 +190,5 @@ resource "null_resource" "configure-interfaces" {
 
 output  "public_ip_addresses" {
     value = ["${aws_instance.jenkins_netplugin.*.public_ip}"]
+    value = ["${aws_instance.jenkins_netplugin.*.private_ip}"]
 }
