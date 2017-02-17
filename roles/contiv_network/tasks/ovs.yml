@@ -1,30 +1,40 @@
 ---
 # This role contains tasks for installing ovs
-
-- name: copy ovs file (redhat)
-  copy: src={{ contiv_standalone_binaries }}/openvswitch-2.3.1-2.el7.x86_64.rpm dest=/tmp/openvswitch-2.3.1-2.el7.x86_64.rpm 
-  when: ansible_os_family == "RedHat" and contiv_network_local_install == True
-
-- name: download ovs binaries (redhat)
+- name: get openstack kilo repo
   get_url:
-    validate_certs: "{{ validate_certs }}"
-    dest: "{{ item.dest }}"
-    url: "{{ item.url }}"
-  with_items:
-    - {
-        url: "https://cisco.box.com/shared/static/zzmpe1zesdpf270k9pml40rlm4o8fs56.rpm",
-        dest: /tmp/openvswitch-2.3.1-2.el7.x86_64.rpm
-      }
-  when: ansible_os_family == "RedHat" and contiv_network_local_install == False
-  tags:
-    - prebake-for-dev
-
-- name: install ovs (redhat)
-  yum: name=/tmp/openvswitch-2.3.1-2.el7.x86_64.rpm state=present
+    url: https://repos.fedorapeople.org/repos/openstack/openstack-kilo/rdo-release-kilo-2.noarch.rpm
+    dest: /tmp/rdo-release-kilo-2.noarch.rpm
+    validate_certs: false
   when: ansible_os_family == "RedHat"
   tags:
     - prebake-for-dev
 
+- name: install openstack kilo rpm
+  yum: name=/tmp/rdo-release-kilo-2.noarch.rpm state=present
+  when: ansible_os_family == "RedHat"
+  tags:
+    - prebake-for-dev
+
+- name: disable openstack kilo repo
+  ini_file:
+    dest: /etc/yum.repos.d/rdo-release.repo
+    section: openstack-kilo
+    option: enabled
+    value: 0
+    mode: 0644
+    backup: no
+  when: ansible_os_family == "RedHat"
+  tags:
+    - prebake-for-dev
+
+- name: install ovs
+  yum:
+    pkg=openvswitch-2.5.0-2.el7.x86_64
+    state=present
+    enablerepo=openstack-kilo
+  when: ansible_os_family == "RedHat"
+  tags:
+    - prebake-for-dev
 
 - name: copy ovs common file (debian)
   copy: src={{ contiv_standalone_binaries }}/v1dvgoboo5zgqrtn6tu27vxeqtdo2bdl.deb dest=/tmp/ovs-common.deb 
