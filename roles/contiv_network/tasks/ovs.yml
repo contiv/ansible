@@ -36,40 +36,18 @@
   tags:
     - prebake-for-dev
 
-- name: copy ovs common file (debian)
-  copy: src={{ contiv_standalone_binaries }}/v1dvgoboo5zgqrtn6tu27vxeqtdo2bdl.deb dest=/tmp/ovs-common.deb 
-  when: ansible_os_family == "Debian" and contiv_network_local_install == True
-
-- name: copy ovs switch file (debian)
-  copy: src={{ contiv_standalone_binaries }}/ymbuwvt2qprs4tquextw75b82hyaxwon.deb dest=/tmp/ovs-switch.deb 
-  when: ansible_os_family == "Debian" and contiv_network_local_install == True
-
-- name: download ovs binaries (debian)
-  get_url:
-    validate_certs: "{{ validate_certs }}"
-    dest: "{{ item.dest }}"
-    url: "{{ item.url }}"
-  with_items:
-    - {
-        url: "https://cisco.box.com/shared/static/v1dvgoboo5zgqrtn6tu27vxeqtdo2bdl.deb",
-        dest: /tmp/ovs-common.deb
-      }
-    - {
-        url: "https://cisco.box.com/shared/static/ymbuwvt2qprs4tquextw75b82hyaxwon.deb",
-        dest: /tmp/ovs-switch.deb
-      }
-  when: ansible_os_family == "Debian" and contiv_network_local_install == False
-  tags:
-    - prebake-for-dev
-
 - name: install ovs-common (debian)
-  apt: "deb=/tmp/ovs-common.deb"
+  apt: 
+      name: openvswitch-common=2.5.0-0ubuntu1
+      state: present
   when: ansible_os_family == "Debian"
   tags:
     - prebake-for-dev
 
 - name: install ovs (debian)
-  apt: "deb=/tmp/ovs-switch.deb"
+  apt: 
+      name: openvswitch-switch=2.5.0-0ubuntu1
+      state: present
   when: ansible_os_family == "Debian"
   tags:
     - prebake-for-dev
