@@ -16,3 +16,9 @@
 
 - name: install docker (debian)
   shell: curl https://get.docker.com | sed 's/docker-engine/--force-yes docker-engine={{ docker_version }}-0~{{ ansible_distribution_release }}/' | bash
+  when: "{{ docker_version | version_compare('1.12', '<') }}"
+
+- name: install docker 1.12+ (debian)
+  shell: curl https://get.docker.com | sed 's/docker-engine/--force-yes docker-engine={{ docker_version }}-0~ubuntu-{{ ansible_distribution_release }}/' | bash
+  when: "{{ docker_version | version_compare('1.12', '>=') }}"
+
