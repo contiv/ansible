@@ -1,29 +1,67 @@
 ---
 # This role contains tasks for installing ovs
-- name: get openstack kilo repo
+
+# Local install
+- name: copy ovs file (redhat)
+  copy: src={{ contiv_standalone_binaries }}/openvswitch-2.5.0-2.el7.x86_64.rpm dest=/tmp/openvswitch-2.5.0-2.el7.x86_64.rpm
+  when: ansible_os_family == "RedHat" and contiv_network_local_install == True
+
+
+- name: install ovs (redhat)
+  yum: name=/tmp/openvswitch-2.5.0-2.el7.x86_64.rpm state=present
+  when: ansible_os_family == "RedHat" and contiv_network_local_install == True
+  tags:
+    - prebake-for-dev
+
+
+- name: copy ovs common file (debian)
+  copy: src={{ contiv_standalone_binaries }}/ovs-common.deb dest=/tmp/ovs-common.deb
+  when: ansible_os_family == "Debian" and contiv_network_local_install == True
+
+- name: copy ovs switch file (debian)
+  copy: src={{ contiv_standalone_binaries }}/ovs-switch.deb dest=/tmp/ovs-switch.deb
+  when: ansible_os_family == "Debian" and contiv_network_local_install == True
+
+
+
+- name: install ovs-common (debian)
+  apt: "deb=/tmp/ovs-common.deb"
+  when: ansible_os_family == "Debian" and contiv_network_local_install == True
+  tags:
+    - prebake-for-dev
+
+- name: install ovs (debian)
+  apt: "deb=/tmp/ovs-switch.deb"
+  when: ansible_os_family == "Debian" and contiv_network_local_install == True
+  tags:
+    - prebake-for-dev
+
+# Remote install
+
+- name: get openstack ocata repo
   get_url:
-    url: https://repos.fedorapeople.org/repos/openstack/openstack-kilo/rdo-release-kilo-2.noarch.rpm
-    dest: /tmp/rdo-release-kilo-2.noarch.rpm
+    url: https://repos.fedorapeople.org/repos/openstack/openstack-ocata/rdo-release-ocata-2.noarch.rpm
+    dest: /tmp/rdo-release-ocata-2.noarch.rpm
     validate_certs: false
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and contiv_network_local_install == False
   tags:
     - prebake-for-dev
 
-- name: install openstack kilo rpm
-  yum: name=/tmp/rdo-release-kilo-2.noarch.rpm state=present
-  when: ansible_os_family == "RedHat"
+- name: install openstack ocata rpm
+  yum: name=/tmp/rdo-release-ocata-2.noarch.rpm state=present
+  when: ansible_os_family == "RedHat" and contiv_network_local_install == False
   tags:
     - prebake-for-dev
 
-- name: disable openstack kilo repo
+- name: disable openstack ocata repo
   ini_file:
     dest: /etc/yum.repos.d/rdo-release.repo
-    section: openstack-kilo
+    section: openstack-ocata
     option: enabled
     value: 0
     mode: 0644
     backup: no
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and contiv_network_local_install == False
   tags:
     - prebake-for-dev
 
@@ -31,8 +69,8 @@
   yum:
     pkg=openvswitch-2.5.0-2.el7.x86_64
     state=present
-    enablerepo=openstack-kilo
-  when: ansible_os_family == "RedHat"
+    enablerepo=openstack-ocata
+  when: ansible_os_family == "RedHat" and contiv_network_local_install == False
   tags:
     - prebake-for-dev
 
@@ -40,7 +78,7 @@
   apt: 
       name: openvswitch-common=2.5.0-0ubuntu1
       state: present
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and contiv_network_local_install == False
   tags:
     - prebake-for-dev
 
@@ -48,7 +86,7 @@
   apt: 
       name: openvswitch-switch=2.5.0-0ubuntu1
       state: present
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and contiv_network_local_install == False
   tags:
     - prebake-for-dev
 
