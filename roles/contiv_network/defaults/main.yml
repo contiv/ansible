@@ -7,7 +7,8 @@
 contiv_network_mode: "standalone" # Accepted values: standalone, aci
 netplugin_mode: "docker" # Accepted values: docker, kubernetes
 fwd_mode: "bridge" #Accepted values: bridge , routing
-
+listen_url: ":9999"
+control_url: ":9999"
 cluster_store: "etcd://127.0.0.1:2379"
 contiv_standalone_binaries: "/var/contiv_cache"
 ofnet_master_port: 9001
