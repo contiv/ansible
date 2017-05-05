@@ -2,11 +2,20 @@
 # This role contains tasks for installing docker service
 #
 
-- name: add docker's public key for CS-engine (redhat)
+- name: add docker's public key for CS-engine (redhat) (from sks-keyservers.net)
   rpm_key:
     key: "https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e"
     state: present
     validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: True
+
+- name: add docker's public key for CS-engine (redhat) (from pgp.mit.edu)
+  rpm_key:
+    key: "https://pgp.mit.edu/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e"
+    state: present
+    validate_certs: "{{ validate_certs }}"
+  when: result|failed
 
 - name: add docker CS-engine repos (redhat)
   shell: yum-config-manager --add-repo https://yum.dockerproject.org/repo/main/centos/7/
