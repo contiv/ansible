@@ -19,3 +19,4 @@ dependencies:
 - { role: swarm }
 - { role: ucp }
 - { role: contiv_network }
+- { role: v2plugin }
