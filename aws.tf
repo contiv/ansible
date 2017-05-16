@@ -88,7 +88,7 @@ variable "ssh_keypair" {}
 variable "key_path" {}
 
 variable "aws_ami" {
-    default = "ami-af4333cf" # CentOS 7 AMI
+    default = "ami-7c280d1c" # CentOS 7 AMI
 }
 
 variable "aws_instance_type" {
