@@ -12,13 +12,13 @@
     mode: u=rwx,g=rx,o=rx
     remote_src: yes
     force: yes
-  notify: restart kubernetes
+  #notify: restart kubernetes
 
 - name: copy contiv k8s plugin config file
   copy:
     src: contiv_cni.conf
     dest: "{{ k8s_net_plugin_config_dir }}/contiv_cni.conf"
-  notify: restart kubernetes
+  #notify: restart kubernetes
 
 - name: ensure contiv plugin config dir exists
   file:
