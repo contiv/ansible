@@ -112,6 +112,24 @@
   retries: 9
   delay: 10
 
+# get the netmaster status for debugging in case there are errors
+- name: get netmaster status
+  shell: systemctl status netmaster -l
+  register: netmaster_status
+  when: (run_as == "master")
+
+- debug: msg={{ netmaster_status.stdout }} verbosity=2
+  when: (run_as == "master")
+  ignore_errors: true
+
+# get the netplugin status for debugging in case there are errors
+- name: get netplugin status
+  shell: systemctl status netplugin -l
+  register: netplugin_status
+
+- debug: msg={{ netplugin_status.stdout }} verbosity=2
+  ignore_errors: true
+
 - include: aci_tasks.yml
   when: (run_as == "master") and (contiv_network_mode == "aci")
 

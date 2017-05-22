@@ -41,4 +41,13 @@
 - name: start etcd
   systemd: name=etcd daemon_reload=yes state=started enabled=yes
 
+- name: wait for etcd to startup
+  shell: systemctl status etcd -l
+  register: etcd_result
+  until: etcd_result.stdout.find("Active") != -1
+  retries: 9
+  delay: 10
+
+- debug: msg={{ etcd_result.stdout }} verbosity=2
+  ignore_errors: true
 
