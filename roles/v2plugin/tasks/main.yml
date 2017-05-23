@@ -1,0 +1,67 @@
+---
+# This role contains tasks for starting docker plugin service
+
+- name: setup iptables for contiv network control plane
+  shell: >
+      ( iptables -L INPUT | grep "{{ netplugin_rule_comment }} ({{ item }})" ) || \
+      iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "{{ netplugin_rule_comment }} ({{ item }})"
+  with_items:
+    - "{{ ofnet_master_port }}"
+    - "{{ ofnet_agent_port1 }}"
+    - "{{ ofnet_agent_port2 }}"
+    - "{{ netmaster_port }}"
+    - "{{ gobgp_grpc_port }}"
+    - "{{ bgp_port }}"
+    - "{{ vxlan_port }}"
+
+- name: setup netmaster host alias
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ service_vip }} netmaster"
+    regexp: " netmaster$"
+    state: present
+
+- name: install v2plugin on {{ run_as }} nodes
+  shell: >
+    /usr/bin/docker plugin install --grant-all-permissions {{contiv_v2plugin_image}} ctrl_ip={{node_addr}} control_url={{node_addr}}:{{netmaster_port}} vxlan_port={{vxlan_port}} iflist={{netplugin_if}} plugin_name={{contiv_v2plugin_image}} cluster_store={{cluster_store}} plugin_role={{run_as}}
+
+- name: copy contiv netctl binary
+  copy: src="{{ contiv_standalone_binaries }}/{{ contiv_network_tar_file }}" dest="{{ contiv_network_dest_file }}"
+  when: (contiv_network_local_install == True)
+
+- name: download contiv netctl binary
+  get_url:
+    validate_certs: "{{ validate_certs }}"
+    url: "{{ contiv_network_src_file }}"
+    dest: "{{ contiv_network_dest_file }}" 
+  when: (contiv_network_local_install == False)
+
+- name: ensure netplugin directory exists
+  file: path=/usr/bin/contiv/netplugin state=directory
+
+- name: extract binaries from tar file
+  shell: tar vxjf {{ contiv_network_dest_file }} netctl contrib/completion/bash/netctl
+  args:
+    chdir: /usr/bin/contiv/netplugin
+
+- name: create links for netctl binary
+  file: src=/usr/bin/contiv/netplugin/netctl dest=/usr/bin/netctl state=link force=yes
+
+- name: copy bash auto complete file for netctl
+  file: src=/usr/bin/contiv/netplugin/contrib/completion/bash/netctl dest=/etc/bash_completion.d/netctl state=link
+
+# setting global info needs netmaster to be ready
+- name: wait for netmaster to be ready
+  action: shell netctl tenant ls
+  register: tenant_result
+  until: tenant_result.stdout.find("default") != -1
+  retries: 9
+  delay: 10
+
+- include: aci_tasks.yml
+  when: (run_as == "master") and (contiv_network_mode == "aci")
+
+- name: set fwd mode
+  shell: netctl global set --fwd-mode "{{ fwd_mode }}"
+  when: (run_as == "master")
+  run_once: true 

@@ -1,0 +1,12 @@
+---
+# This playbook performs cleanup for v2plugin.
+#
+# Note: cleanup is not expected to fail, so we set ignore_errors to yes here
+
+- hosts: all
+  become: true
+  tasks:
+    - include_vars: roles/v2plugin/defaults/main.yml
+    - include: roles/v2plugin/tasks/cleanup.yml
+      static: no
+      ignore_errors: yes
