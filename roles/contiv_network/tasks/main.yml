@@ -61,13 +61,6 @@
 - name: start netplugin
   systemd: name=netplugin daemon_reload=yes state=started enabled=yes
 
-- name: setup netmaster host alias
-  lineinfile:
-    dest: /etc/hosts
-    line: "{{ service_vip }} netmaster"
-    regexp: " netmaster$"
-    state: present
-
 # XXX: remove this task once the following is resolved: https://github.com/contiv/netplugin/issues/275
 - name: setup hostname alias
   lineinfile:
@@ -78,6 +71,13 @@
   with_items:
     - { line: '127.0.0.1 localhost', regexp: '^127\.0\.0\.1' }
     - { line: '{{ node_addr }} {{ ansible_hostname }}', regexp: ' {{ ansible_hostname }}$' }
+
+- name: setup netmaster host alias
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ service_vip }} netmaster"
+    regexp: " netmaster$"
+    state: present
 
 - name: copy environment file for netmaster
   template: src=netmaster.j2 dest=/etc/default/netmaster
