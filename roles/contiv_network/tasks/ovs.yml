@@ -76,7 +76,7 @@
 
 - name: install ovs-common (debian)
   apt: 
-      name: openvswitch-common=2.5.0-0ubuntu1
+      name: openvswitch-common=2.5.*
       state: present
   when: ansible_os_family == "Debian" and contiv_network_local_install == False
   tags:
@@ -84,7 +84,7 @@
 
 - name: install ovs (debian)
   apt: 
-      name: openvswitch-switch=2.5.0-0ubuntu1
+      name: openvswitch-switch=2.5.*
       state: present
   when: ansible_os_family == "Debian" and contiv_network_local_install == False
   tags:
