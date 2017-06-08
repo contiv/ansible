@@ -58,7 +58,7 @@
 
 # setting global info needs netmaster to be ready
 - name: wait for netmaster to be ready
-  action: shell netctl tenant ls
+  action: shell netctl --netmaster {{ netctl_url }} tenant ls
   register: tenant_result
   until: tenant_result.stdout.find("default") != -1
   retries: 9
@@ -68,6 +68,6 @@
   when: (run_as == "master") and (contiv_network_mode == "aci")
 
 - name: set fwd mode
-  shell: netctl global set --fwd-mode "{{ fwd_mode }}"
+  shell: netctl --netmaster {{ netctl_url }} global set --fwd-mode "{{ fwd_mode }}"
   when: (run_as == "master")
   run_once: true 
