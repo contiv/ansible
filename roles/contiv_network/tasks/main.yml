@@ -116,6 +116,6 @@
   when: (run_as == "master") and (contiv_network_mode == "aci")
 
 - name: set fwd mode
-  shell: netctl --netmaster http://{{ listen_url }} global set --fwd-mode "{{ fwd_mode }}"
+  shell: netctl --netmaster {{ netctl_url }} global set --fwd-mode "{{ fwd_mode }}"
   when: (run_as == "master")
   run_once: true 

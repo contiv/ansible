@@ -26,5 +26,5 @@
   systemd: name=aci-gw daemon_reload=yes state=started enabled=yes
 
 - name: set aci mode
-  shell: netctl global set --fabric-mode aci
+  shell: netctl --netmaster {{ netctl_url }} global set --fabric-mode aci
   run_once: true
