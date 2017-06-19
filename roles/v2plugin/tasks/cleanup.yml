@@ -15,6 +15,9 @@
     state: absent
   become: true
 
+- name: remove netctl files
+  shell: rm /usr/bin/contiv/netplugin/netctl /usr/bin/netctl /usr/bin/contiv/netplugin/contrib/completion/bash/netctl /etc/bash_completion.d/netctl 
+
 - name: cleanup iptables for contiv network control plane
   shell: iptables -D INPUT -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "{{ netplugin_rule_comment }} ({{ item }})"
   become: true

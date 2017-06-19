@@ -16,6 +16,7 @@ ofnet_master_port: 9001
 ofnet_agent_port1: 9002
 ofnet_agent_port2: 9003
 netmaster_port: 9999
+netctl_url: "http://netmaster:9999"
 gobgp_grpc_port: 8080
 bgp_port: 179
 # Since there is a conflict on vxlan port used by Docker overlay (ingress)
