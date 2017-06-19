@@ -1,8 +1,10 @@
 ---
 
-# Role defaults for contiv_network
+# Role defaults for contiv_network & v2plugin
 # NOTE: Role defaults have a lower priority than inventory vars.
 # Include variables which need to be overridden by inventory vars here.
+
+contiv_v2plugin_image: "contiv/v2plugin:1.0.3"
 
 contiv_network_mode: "standalone" # Accepted values: standalone, aci
 netplugin_mode: "docker" # Accepted values: docker, kubernetes
@@ -18,21 +20,19 @@ ofnet_agent_port2: 9003
 netmaster_port: 9999
 gobgp_grpc_port: 8080
 bgp_port: 179
+# Since there is a conflict on vxlan port used by Docker overlay (ingress)
+# contiv needs to use a different port than the standard 4789 for v2plugin
+# vxlan_port: 8472
 vxlan_port: 4789
 netplugin_rule_comment: "contiv network traffic"
 
 aci_gw_image: "contiv/aci-gw"
-contiv_network_version: "v0.1-11-30-2016.20-08-20.UTC"
+# contiv tar files to get netplugin binary
+contiv_network_version: "1.0.3"
 contiv_network_tar_file: "netplugin-{{ contiv_network_version }}.tar.bz2"
 contiv_network_src_tar_file: "{{ contiv_standalone_binaries }}/{{ contiv_network_tar_file }}"
 contiv_network_src_file: "https://github.com/contiv/netplugin/releases/download/{{ contiv_network_version }}/{{ contiv_network_tar_file }}"
 contiv_network_dest_file: "/tmp/{{ contiv_network_tar_file }}"
-
-contivctl_version_no_v: "0.1-05-26-2016.22-31-22.UTC"
-contivctl_version: "v{{ contivctl_version_no_v }}"
-contivctl_tar_file: "{{ contivctl_version }}.tar.gz"
-contivctl_src_file: "https://github.com/contiv/contivctl/archive/{{ contivctl_tar_file }}"
-contivctl_dest_file: "/tmp/contivctl-{{ contivctl_tar_file }}"
 
 apic_epg_bridge_domain: "not_specified"
 apic_contracts_unrestricted_mode: "no"

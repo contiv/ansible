@@ -1,5 +1,5 @@
 ---
-# This play contains tasks for cleaning up contiv_network services
+# This play contains tasks for cleaning up contiv_network & v2plugin services
 
 - name: stop netmaster
   service: name=netmaster state=stopped
@@ -9,6 +9,11 @@
 
 - name: stop netplugin
   service: name=netplugin state=stopped
+
+- name: uninstall v2plugin on nodes
+  shell: >
+      (/usr/bin/docker plugin disable {{ contiv_v2plugin_image }}) && /usr/bin/docker plugin rm -f {{ contiv_v2plugin_image }}
+
 
 - name: cleanup netmaster host alias
   lineinfile:
@@ -27,6 +32,7 @@
     - "{{ netmaster_port }}"
     - "{{ gobgp_grpc_port }}"
     - "{{ bgp_port }}"
+    - "{{ vxlan_port }}"
 
 - include: ovs_cleanup.yml
   static: no
