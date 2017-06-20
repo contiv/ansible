@@ -1,9 +1,6 @@
 ---
 # This role contains tasks for configuring and starting netmaster and netplugin service
-
-# install ovs, needed for our netplugin deployments. In future, if needed, this
-# install can be conditional based on deployment environment.
-- include: ovs.yml
+# or for starting docker plugin service
 
 - name: setup iptables for contiv network control plane
   shell: >
@@ -16,12 +13,20 @@
     - "{{ netmaster_port }}"
     - "{{ gobgp_grpc_port }}"
     - "{{ bgp_port }}"
+    - "{{ vxlan_port }}"
 
-- name: copy netmaster and netplugin
+- name: setup netmaster host alias
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ service_vip }} netmaster"
+    regexp: " netmaster$"
+    state: present
+
+- name: copy contiv binaries
   copy: src="{{ contiv_standalone_binaries }}/{{ contiv_network_tar_file }}" dest="{{ contiv_network_dest_file }}"
   when: contiv_network_local_install == True 
 
-- name: download netmaster and netplugin
+- name: download contiv binaries
   get_url:
     validate_certs: "{{ validate_certs }}"
     url: "{{ contiv_network_src_file }}"
@@ -31,78 +36,22 @@
 - name: ensure netplugin directory exists
   file: path=/usr/bin/contiv/netplugin state=directory
 
-- name: install netmaster and netplugin
-  shell: tar vxjf {{ contiv_network_dest_file }}
-  args:
-    chdir: /usr/bin/contiv/netplugin
+- include: services.yml
+  when: contiv_v2plugin_install == False
 
-- name: create links for netplugin binaries
-  file: src=/usr/bin/contiv/netplugin/{{ item }} dest=/usr/bin/{{ item }} state=link force=yes
-  with_items:
-    - netctl
-    - netmaster
-    - netplugin
-    - contivk8s
+- include: v2plugin.yml
+  when: contiv_v2plugin_install == True
 
 # k8s tasks are run after extracting the binaries as we need to copy the k8s
 # cni plugin for contiv, which is available after extraction of binaries
 - include: k8s_tasks.yml
   when: scheduler_provider == "kubernetes"
 
-- name: copy environment file for netplugin
-  template: src=netplugin.j2 dest=/etc/default/netplugin
-
-- name: copy systemd units for netplugin
-  copy: src=netplugin.service dest=/etc/systemd/system/netplugin.service
+- name: create links for netctl binary
+  file: src=/usr/bin/contiv/netplugin/netctl dest=/usr/bin/netctl state=link force=yes
 
 - name: copy bash auto complete file for netctl
   file: src=/usr/bin/contiv/netplugin/contrib/completion/bash/netctl dest=/etc/bash_completion.d/netctl state=link
-
-- name: start netplugin
-  systemd: name=netplugin daemon_reload=yes state=started enabled=yes
-
-# XXX: remove this task once the following is resolved: https://github.com/contiv/netplugin/issues/275
-- name: setup hostname alias
-  lineinfile:
-    dest: /etc/hosts
-    line: "{{ item.line }}"
-    regexp: "{{ item.regexp }}"
-    state: present
-  with_items:
-    - { line: '127.0.0.1 localhost', regexp: '^127\.0\.0\.1' }
-    - { line: '{{ node_addr }} {{ ansible_hostname }}', regexp: ' {{ ansible_hostname }}$' }
-
-- name: setup netmaster host alias
-  lineinfile:
-    dest: /etc/hosts
-    line: "{{ service_vip }} netmaster"
-    regexp: " netmaster$"
-    state: present
-
-- name: copy environment file for netmaster
-  template: src=netmaster.j2 dest=/etc/default/netmaster
-  when: run_as == "master"
-
-- name: copy systemd units for netmaster
-  copy: src=netmaster.service dest=/etc/systemd/system/netmaster.service
-  when: run_as == "master"
-
-- name: start netmaster
-  systemd: name=netmaster daemon_reload=yes state=started enabled=yes
-  when: run_as == "master"
-
-# FIXME: need to move the following tasks to correct role
-- name: download contivctl
-  get_url:
-    validate_certs: "{{ validate_certs }}"
-    url: "{{ contivctl_src_file }}"
-    dest: "{{ contivctl_dest_file }}"
-    force: no
-
-- name: install contivctl
-  shell: tar vxzf {{ contivctl_dest_file }} --strip-components=1 contivctl-{{ contivctl_version_no_v }}/contivctl
-  args:
-    chdir: /usr/bin/
 
 # setting global info needs netmaster to be ready
 - name: wait for netmaster to be ready
