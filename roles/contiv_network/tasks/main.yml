@@ -2,18 +2,6 @@
 # This role contains tasks for configuring and starting netmaster and netplugin service
 # or for starting docker plugin service
 
-# install ovs, needed for our netplugin deployments. In future, if needed, this
-# install can be conditional based on deployment environment.
-- include: ovs.yml
-  when: contiv_v2plugin_install == False
-
-- name: create the directories needed for ovs
-  shell: mkdir -p {{ item }}
-  with_items:
-    - "/etc/openvswitch"
-    - "/var/log/openvswitch"
-  when: contiv_v2plugin_install == True
-
 - name: setup iptables for contiv network control plane
   shell: >
       ( iptables -L INPUT | grep "{{ netplugin_rule_comment }} ({{ item }})" ) || \
@@ -34,11 +22,6 @@
     regexp: " netmaster$"
     state: present
 
-- name: install v2plugin on {{ run_as }} nodes
-  shell: >
-    /usr/bin/docker plugin install --grant-all-permissions {{contiv_v2plugin_image}} ctrl_ip={{node_addr}} control_url={{node_addr}}:{{netmaster_port}} vxlan_port={{vxlan_port}} iflist={{netplugin_if}} plugin_name={{contiv_v2plugin_image}} cluster_store={{cluster_store}} plugin_role={{run_as}}
-  when: contiv_v2plugin_install == True
-
 - name: copy contiv binaries
   copy: src="{{ contiv_standalone_binaries }}/{{ contiv_network_tar_file }}" dest="{{ contiv_network_dest_file }}"
   when: contiv_network_local_install == True 
@@ -53,72 +36,22 @@
 - name: ensure netplugin directory exists
   file: path=/usr/bin/contiv/netplugin state=directory
 
-- name: for legacy install, extract all binaries
-  shell: tar vxjf {{ contiv_network_dest_file }}
-  args:
-    chdir: /usr/bin/contiv/netplugin
+- include: services.yml
   when: contiv_v2plugin_install == False
 
-- name: for v2 plugin, extract netctl binary
-  shell: tar vxjf {{ contiv_network_dest_file }} netctl contrib/completion/bash/netctl
-  args:
-    chdir: /usr/bin/contiv/netplugin
+- include: v2plugin.yml
   when: contiv_v2plugin_install == True
-
-- name: create links for netplugin binaries
-  file: src=/usr/bin/contiv/netplugin/{{ item }} dest=/usr/bin/{{ item }} state=link force=yes
-  with_items:
-    - netmaster
-    - netplugin
-    - contivk8s
-  when: contiv_v2plugin_install == False
-
-- name: create links for netctl binary
-  file: src=/usr/bin/contiv/netplugin/netctl dest=/usr/bin/netctl state=link force=yes
 
 # k8s tasks are run after extracting the binaries as we need to copy the k8s
 # cni plugin for contiv, which is available after extraction of binaries
 - include: k8s_tasks.yml
   when: scheduler_provider == "kubernetes"
 
+- name: create links for netctl binary
+  file: src=/usr/bin/contiv/netplugin/netctl dest=/usr/bin/netctl state=link force=yes
+
 - name: copy bash auto complete file for netctl
   file: src=/usr/bin/contiv/netplugin/contrib/completion/bash/netctl dest=/etc/bash_completion.d/netctl state=link
-
-- name: copy environment file for netplugin
-  template: src=netplugin.j2 dest=/etc/default/netplugin
-  when: contiv_v2plugin_install == False
-
-- name: copy systemd units for netplugin
-  copy: src=netplugin.service dest=/etc/systemd/system/netplugin.service
-  when: contiv_v2plugin_install == False
-
-- name: start netplugin
-  systemd: name=netplugin daemon_reload=yes state=started enabled=yes
-  when: contiv_v2plugin_install == False
-
-# XXX: remove this task once the following is resolved: https://github.com/contiv/netplugin/issues/275
-- name: setup hostname alias
-  lineinfile:
-    dest: /etc/hosts
-    line: "{{ item.line }}"
-    regexp: "{{ item.regexp }}"
-    state: present
-  with_items:
-    - { line: '127.0.0.1 localhost', regexp: '^127\.0\.0\.1' }
-    - { line: '{{ node_addr }} {{ ansible_hostname }}', regexp: ' {{ ansible_hostname }}$' }
-  when: contiv_v2plugin_install == False
-
-- name: copy environment file for netmaster
-  template: src=netmaster.j2 dest=/etc/default/netmaster
-  when: run_as == "master" and contiv_v2plugin_install == False
-
-- name: copy systemd units for netmaster
-  copy: src=netmaster.service dest=/etc/systemd/system/netmaster.service
-  when: run_as == "master" and contiv_v2plugin_install == False
-
-- name: start netmaster
-  systemd: name=netmaster daemon_reload=yes state=started enabled=yes
-  when: run_as == "master" and contiv_v2plugin_install == False
 
 # setting global info needs netmaster to be ready
 - name: wait for netmaster to be ready
