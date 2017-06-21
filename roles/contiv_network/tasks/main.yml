@@ -18,9 +18,10 @@
 - name: setup netmaster host alias
   lineinfile:
     dest: /etc/hosts
-    line: "{{ service_vip }} netmaster"
+    line: "127.0.0.1 netmaster"
     regexp: " netmaster$"
     state: present
+  when: (run_as == "master")
 
 - name: copy contiv binaries
   copy: src="{{ contiv_standalone_binaries }}/{{ contiv_network_tar_file }}" dest="{{ contiv_network_dest_file }}"

@@ -19,7 +19,7 @@ start)
       --tls-key-file={{ auth_proxy_key }} \
       --tls-certificate={{ auth_proxy_cert }} \
       --data-store-address={{ auth_proxy_datastore }} \
-      --netmaster-address={{ service_vip }}:9999 \
+      --netmaster-address={{ auth_proxy_netmaster }} \
       --listen-address=:10000 
     ;;
 
