@@ -33,7 +33,7 @@
     regexp: "{{ item.regexp }}"
     state: present
   with_items:
-    - { line: '127.0.0.1 localhost', regexp: '^127\.0\.0\.1' }
+    - { line: '127.0.0.1 localhost', regexp: '^127\.0\.0\.1 .*localhost$' }
     - { line: '{{ node_addr }} {{ ansible_hostname }}', regexp: ' {{ ansible_hostname }}$' }
 
 - name: copy environment file for netmaster
