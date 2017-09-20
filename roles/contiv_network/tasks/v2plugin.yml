@@ -7,9 +7,15 @@
     - "/etc/openvswitch"
     - "/var/log/openvswitch"
 
+- name: check if v2plugin has been installed on {{ run_as }} nodes
+  shell: docker plugin ls | grep -n {{ contiv_v2plugin_image }}
+  register: v2plugin_installed
+  ignore_errors: True
+
 - name: install v2plugin on {{ run_as }} nodes
   shell: >
     /usr/bin/docker plugin install --grant-all-permissions {{contiv_v2plugin_image}} ctrl_ip={{node_addr}} control_url={{node_addr}}:{{netmaster_port}} vxlan_port={{vxlan_port}} iflist={{netplugin_if}} plugin_name={{contiv_v2plugin_image}} cluster_store={{cluster_store}} plugin_role={{run_as}}
+  when: v2plugin_installed|failed
 
 - name: for v2 plugin, extract netctl binary
   shell: tar vxjf {{ contiv_network_dest_file }} netctl contrib/completion/bash/netctl
