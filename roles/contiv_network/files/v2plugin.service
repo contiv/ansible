@@ -1,0 +1,11 @@
+[Unit]
+Description=enable v2plugin after etcd 
+After=docker.service etcd.service
+PartOf=etcd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/v2plugin.sh
+StandardOutput=journal
+[Install]
+WantedBy=multi-user.target
