@@ -46,7 +46,8 @@ if [ $# -ne 1 ]; then
 fi
 
 export ETCD_NAME={{ node_name }}
-export ETCD_DATA_DIR=/var/lib/etcd
+export ETCD_DATA_DIR=/var/lib/etcd/data
+export ETCD_WAL_DIR=/var/lib/etcd/wal
 export ETCD_INITIAL_CLUSTER_TOKEN=contiv-cluster
 export ETCD_LISTEN_CLIENT_URLS={{ client_url("0.0.0.0") }}
 export ETCD_ADVERTISE_CLIENT_URLS={{ client_url(node_addr) }}
@@ -131,6 +132,7 @@ init_update_cluster() {
     # on master nodes, if the cluster is being initialized for first time then initialize it
     peers=""
     get_peers "{{ get_peer_addr() }}"
+    rm -rf ${ETCD_WAL_DIR}/*
     if [ "${peers}" == "" ]; then
         echo "==> no peers configured or rest of the etcd cluster is unhealthy, trying to init the cluster"
         export ETCD_INITIAL_CLUSTER_STATE=new
@@ -173,8 +175,10 @@ start)
     echo "==> starting etcd with environment:" `env`
     /usr/bin/docker run -t --rm --net=host --name etcd \
         -v ${ETCD_DATA_DIR}:${ETCD_DATA_DIR} \
+        -v ${ETCD_WAL_DIR}:${ETCD_WAL_DIR} \
         -e ETCD_NAME=${ETCD_NAME} \
         -e ETCD_DATA_DIR=${ETCD_DATA_DIR} \
+        -e ETCD_WAL_DIR=${ETCD_WAL_DIR} \
         -e ETCD_INITIAL_CLUSTER_TOKEN=${ETCD_INITIAL_CLUSTER_TOKEN} \
         -e ETCD_LISTEN_CLIENT_URLS=${ETCD_LISTEN_CLIENT_URLS} \
         -e ETCD_ADVERTISE_CLIENT_URLS=${ETCD_ADVERTISE_CLIENT_URLS} \

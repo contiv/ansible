@@ -21,6 +21,19 @@
   tags:
     - prebake-for-dev
 
+# Make Iptables rule persistent across reboot
+- name: Install iptable-service package
+  yum: pkg={{ item }} state=present
+  with_items:
+   - iptables-services
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Install iptables-persistent  
+  apt: name={{item}} state=installed
+  with_items:
+       - iptables-persistent
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
 - name: setup iptables for etcd
   shell: >
       ( iptables -L INPUT | grep "{{ etcd_rule_comment }} ({{ item }})" ) || \
@@ -32,6 +45,11 @@
     - "{{ etcd_peer_port1 }}"
     - "{{ etcd_peer_port2 }}"
 
+#  Save rules into /etc/sysconfig/iptables file for restoring rules on boot 
+- name: Save iptables
+  command: service iptables save
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
 - name: copy the etcd start/stop script
   template: src=etcd.j2 dest=/usr/bin/etcd.sh mode=u=rwx,g=rx,o=rx
 
@@ -40,5 +58,4 @@
 
 - name: start etcd
   systemd: name=etcd daemon_reload=yes state=started enabled=yes
-
 
