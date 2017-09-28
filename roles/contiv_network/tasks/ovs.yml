@@ -38,38 +38,28 @@
 
 # Remote install
 
-- name: get openstack ocata repo
+- name: get the openvswitch RPM from centos.org
   get_url:
-    url: https://repos.fedorapeople.org/repos/openstack/openstack-ocata/rdo-release-ocata-2.noarch.rpm
-    dest: /tmp/rdo-release-ocata-2.noarch.rpm
-    validate_certs: false
+    url: https://cbs.centos.org/kojifiles/packages/openvswitch/2.5.0/2.el7/x86_64/openvswitch-2.5.0-2.el7.x86_64.rpm
+    dest: /tmp/openvswitch-2.5.0-2.el7.x86_64.rpm
+    checksum: sha256:2ff007391ede80f9887495526e8e1c45d1ce746b2b97efe8e258279ca3a75467
   when: ansible_os_family == "RedHat" and contiv_network_local_install == False
   tags:
     - prebake-for-dev
+  register: ovs_rpm_download
+  ignore_errors: True
 
-- name: install openstack ocata rpm
-  yum: name=/tmp/rdo-release-ocata-2.noarch.rpm state=present
-  when: ansible_os_family == "RedHat" and contiv_network_local_install == False
+- name: get the openvswitch RPM from GitHub
+  get_url:
+    url: https://github.com/contiv-experimental/files/raw/master/openvswitch-2.5.0-2.el7.x86_64.rpm
+    dest: /tmp/openvswitch-2.5.0-2.el7.x86_64.rpm
+    checksum: sha256:2ff007391ede80f9887495526e8e1c45d1ce746b2b97efe8e258279ca3a75467
+  when: ansible_os_family == "RedHat" and contiv_network_local_install == False and ovs_rpm_download|failed
   tags:
     - prebake-for-dev
 
-- name: disable openstack ocata repo
-  ini_file:
-    dest: /etc/yum.repos.d/rdo-release.repo
-    section: openstack-ocata
-    option: enabled
-    value: 0
-    mode: 0644
-    backup: no
-  when: ansible_os_family == "RedHat" and contiv_network_local_install == False
-  tags:
-    - prebake-for-dev
-
-- name: install ovs
-  yum:
-    pkg=openvswitch-2.5.0-2.el7.x86_64
-    state=present
-    enablerepo=openstack-ocata
+- name: install ovs (redhat)
+  yum: name=/tmp/openvswitch-2.5.0-2.el7.x86_64.rpm state=present
   when: ansible_os_family == "RedHat" and contiv_network_local_install == False
   tags:
     - prebake-for-dev
