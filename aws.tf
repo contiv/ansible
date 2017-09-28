@@ -92,7 +92,7 @@ variable "aws_ami" {
 }
 
 variable "aws_instance_type" {
-    default = "t2.large"
+    default = "t2.small"
 }
 
 # how many VMs to spin up. 
@@ -101,89 +101,6 @@ variable "aws_instance_type" {
 variable "num_nodes" {
     default = "3"
 }
-
-# ============================================
-# networks
-#
-# vars
-# for convenience, we are using a pre-defined security group, its 
-# associated vpc and subnet.
-#
-# for the second interface, define a new subnet inside the vpc.
-
-
-# eth1 - vxlan network
-resource "aws_network_interface" "netplugin_vxlan_interface" {
-    subnet_id = "${aws_subnet.netplugin_vxlan_subnet.id}"
-    security_groups = ["${var.our_security_group_id}"]
-    count = "${var.num_nodes}"
-
-    # tell which instance(s) this interface belongs to
-    attachment {
-        instance = "${element(aws_instance.jenkins_netplugin.*.id, count.index)}"
-        device_index = 1
-    }
-}
-
-resource "aws_subnet" "netplugin_vxlan_subnet" {
-    vpc_id = "${var.our_vpc_id}"
-    # creates a different subnet using buildnum to generate a number
-    # between 100 and 200
-    cidr_block = "172.31.${var.buildnum%100 + 100}.0/24"
-    availability_zone = "${var.aws_availability_zone}"
-}
-
-
-# ============================================
-# post-launch commands
-#
-# these will be run on each instance after it is launched
-
-variable "ssh_user" {
-  default = "centos"
-}
-
-# setup eth1 with IP# for all instances
-resource "null_resource" "configure-interfaces" {
-    count = "${var.num_nodes}"
-    triggers {
-        jenkins_netplugin_instance_ids = "${join(",", aws_instance.jenkins_netplugin.*.id)}"
-    }
-
-    provisioner "remote-exec" {
-        inline = ["sudo /sbin/ip addr add '172.31.${var.buildnum%100}.1${count.index}/24' dev eth1 && sudo /sbin/ip link set dev eth1 up"]
-    }
-
-    connection {
-        type = "ssh"
-        user = "${var.ssh_user}"
-        private_key = "${file(var.key_path)}"
-        agent = false
-        host = "${element(aws_instance.jenkins_netplugin.*.public_ip, count.index)}"
-    }
-
-}
-
-# WIP - have not tried the ansible command yet.
-# need to strip out the hardcoded IP#'s and use something like:
-#    jenkins_netpugin_instance_ids.index = 0
-
-#resource "null_resource" "ansible" {
-#  triggers {
-#    jenkins_netplugin_instance_ids = "${join(",", aws_instance.jenkins_netplugin.*.id)}"
-#  }
-#
-#  connection {
-#    user = "${var.ssh_user}"
-#    host = "${element(aws_eip.netplugin-eip.*.public_ip, count.index)}"
-#  }
-#
-# this is the command to run on the instance.
-#  provisioner "local-exec" {
-#    command = "echo \"[service-master]\\n${aws_eip.netplugin-eip.0.public_ip}\\n[service-worker]\\n${join("\n", aws_eip.netplugin-eip.*.public_ip)}\" >/tmp/hosts && ansible-playbook -e '{ \"netplugin_if\": \"eth2\", \"netmaster_ip\": \"10.1.10.10\", \"control_interface\": \"eth1\", \"env\": {} }' -i /tmp/hosts --ssh-extra-args='-o StrictHostKeyChecking=false' -T 300 -u ${var.ssh_user} site.yml"
-#  }
-
-#}
 
 # ============================================
 # Output section
