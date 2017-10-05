@@ -1,7 +1,7 @@
 .PHONY: test-up test-provision test-cleanup
 
 test-up:
-	vagrant up
+	something-is-borken
 
 test-provision:
 	vagrant provision
