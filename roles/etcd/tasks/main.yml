@@ -1,3 +1,4 @@
+[metacloud@mcp1 ansible]$ cat roles/etcd/tasks/main.yml
 ---
 # This role contains tasks for configuring and starting etcd service
 
@@ -26,13 +27,19 @@
   yum: pkg={{ item }} state=present
   with_items:
    - iptables-services
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
-- name: Install iptables-persistent  
+- name: Install iptables-persistent
   apt: name={{item}} state=installed
   with_items:
        - iptables-persistent
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Enable iptables service
+  command: systemctl enable iptables
+
+- name: Start iptables service
+  command: systemctl start iptables
 
 - name: setup iptables for etcd
   shell: >
@@ -45,10 +52,10 @@
     - "{{ etcd_peer_port1 }}"
     - "{{ etcd_peer_port2 }}"
 
-#  Save rules into /etc/sysconfig/iptables file for restoring rules on boot 
+#  Save rules into /etc/sysconfig/iptables file for restoring rules on boot
 - name: Save iptables
   command: service iptables save
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
 - name: copy the etcd start/stop script
   template: src=etcd.j2 dest=/usr/bin/etcd.sh mode=u=rwx,g=rx,o=rx
@@ -58,4 +65,3 @@
 
 - name: start etcd
   systemd: name=etcd daemon_reload=yes state=started enabled=yes
-
