@@ -1,4 +1,3 @@
-[metacloud@mcp1 ansible]$ cat roles/etcd/tasks/main.yml
 ---
 # This role contains tasks for configuring and starting etcd service
 
