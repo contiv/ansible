@@ -1,0 +1,9 @@
+[Unit]
+Description=run contiv rule service 
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/contivRule.sh
+StandardOutput=journal
+[Install]
+WantedBy=multi-user.target

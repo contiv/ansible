@@ -173,7 +173,7 @@ start)
 
     #start etcd
     echo "==> starting etcd with environment:" `env`
-    /usr/bin/docker run -t --rm --net=host --name etcd \
+    /usr/bin/docker run -t --rm --net=host --name contiv_etcd \
         -v ${ETCD_DATA_DIR}:${ETCD_DATA_DIR} \
         -v ${ETCD_WAL_DIR}:${ETCD_WAL_DIR} \
         -e ETCD_NAME=${ETCD_NAME} \

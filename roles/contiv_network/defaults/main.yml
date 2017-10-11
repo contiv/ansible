@@ -24,7 +24,7 @@ bgp_port: 179
 # contiv needs to use a different port than the standard 4789 for v2plugin
 # vxlan_port: 8472
 vxlan_port: 4789
-netplugin_rule_comment: "contiv network traffic"
+netplugin_rule_comment: "contiv_network traffic"
 
 aci_gw_image: "contiv/aci-gw"
 # contiv tar files to get netplugin binary

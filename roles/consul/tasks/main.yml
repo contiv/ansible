@@ -29,8 +29,8 @@
 
 - name: setup UDP iptables for consul
   shell: >
-      ( iptables -L INPUT | grep -q 'consul udp ({{ item }})' ) || \
-      iptables -I INPUT 1 -p udp --dport {{ item }} -j ACCEPT -m comment --comment "consul udp ({{ item }})" 
+      ( iptables -L INPUT | grep -q 'contiv_consul udp ({{ item }})' ) || \
+      iptables -I INPUT 1 -p udp --dport {{ item }} -j ACCEPT -m comment --comment "contiv_consul udp ({{ item }})" 
   become: true
   with_items:
     - 8300
@@ -39,8 +39,8 @@
 
 - name: setup TCP iptables for consul
   shell: >
-      ( iptables -L INPUT | grep -q 'consul tcp ({{ item }})' ) || \
-      iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "consul tcp ({{ item }})" 
+      ( iptables -L INPUT | grep -q 'contiv_consul tcp ({{ item }})' ) || \
+      iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "contiv_consul tcp ({{ item }})" 
   become: true
   with_items:
     - 8400

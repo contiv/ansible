@@ -9,7 +9,7 @@ fetch_directory: fetch/
 
 port_ceph_mon: 6789
 port_range_ceph_osd: 6800:7300
-ceph_rule_comment: "ceph traffic"
+ceph_rule_comment: "contiv_ceph traffic"
 
 ###########
 # INSTALL #
