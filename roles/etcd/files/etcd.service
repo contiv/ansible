@@ -3,13 +3,10 @@ Description=Etcd
 After=auditd.service systemd-user-sessions.service time-sync.target docker.service
 
 [Service]
-Restart=on-failure
-RestartSec=10s
 ExecStart=/usr/bin/etcd.sh start
 ExecStop=/usr/bin/etcd.sh stop
 KillMode=control-group
-Restart=on-failure
-RestartSec=10
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
