@@ -6,5 +6,5 @@ auth_proxy_key: "{{ contiv_certs }}/auth_proxy_key.pem"
 auth_proxy_datastore: "{{ cluster_store }}"
 auth_proxy_binaries: "/var/contiv_cache"
 auth_proxy_local_install: False
-auth_proxy_rule_comment: "Contiv auth proxy service"
+auth_proxy_rule_comment: "contiv_auth proxy service"
 auth_proxy_netmaster: "localhost:9999"

@@ -35,3 +35,12 @@
 
 - name: start auth-proxy container
   systemd: name=auth-proxy daemon_reload=yes state=started enabled=yes
+
+- name: copy cotivRule.sh file
+  copy: src=contivRule.sh dest=/usr/bin/contivRule.sh mode=u=rwx,g=rx,o=rx
+
+- name: copy systemd units for contiv rules
+  copy: src=contivRule.service dest=/etc/systemd/system/contivRule.service
+
+- name: start contivRule service
+  systemd: name=contivRule daemon_reload=yes state=started enabled=yes 

@@ -5,7 +5,7 @@ collins_image: contiv/collins
 collins_image_version: "02_25_2016"
 collins_host_port: 9000
 collins_guest_port: 9000
-clusterm_rule_comment: "clusterm traffic"
+clusterm_rule_comment: "contiv_clusterm traffic"
 clusterm_client_port: 9007
 clusterm_args_file: "clusterm.args"
 clusterm_conf_file: "clusterm.conf"

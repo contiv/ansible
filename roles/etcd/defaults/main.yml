@@ -6,7 +6,7 @@ etcd_client_port2: 4001
 etcd_peer_port1: 2380
 etcd_peer_port2: 7001
 etcd_peers_group: "service-master"
-etcd_rule_comment: "etcd traffic"
+etcd_rule_comment: "contiv_etcd traffic"
 etcd_version: "v2.3.8"
 etcd_heartbeat_interval: 1000
 etcd_election_timeout: 10000

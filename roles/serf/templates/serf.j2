@@ -6,17 +6,17 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
-{% set mdns_sport_comment="'serf discovery sport'" -%}
+{% set mdns_sport_comment="'contiv_serf discovery sport'" -%}
 {%- set mdns_sport_rule="-p udp --sport 5353 -i " + 
         serf_discovery_interface + 
         " -j ACCEPT -m comment --comment " +
         mdns_sport_comment -%}
-{%- set mdns_dport_comment="'serf discovery dport'" -%}
+{%- set mdns_dport_comment="'contiv_serf discovery dport'" -%}
 {%- set mdns_dport_rule="-p udp --dport 5353 -i " +
         serf_discovery_interface +
         " -j ACCEPT -m comment --comment " +
         mdns_dport_comment -%}
-{%- set serf_tcp_comment="'serf control'" -%}
+{%- set serf_tcp_comment="'contiv_serf control'" -%}
 {%- set serf_tcp_rule="-p tcp --dport 7946 -i " +
         serf_discovery_interface +
         " -j ACCEPT -m comment --comment " +

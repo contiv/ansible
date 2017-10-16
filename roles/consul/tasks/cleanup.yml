@@ -12,7 +12,7 @@
     src: /etc/systemd/system/consul.service
 
 - name: cleanup iptables (udp)
-  shell: iptables -D INPUT -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "consul udp ({{ item }})"
+  shell: iptables -D INPUT -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "contiv_consul udp ({{ item }})"
   become: true
   with_items:
     - 8300
@@ -20,7 +20,7 @@
     - 8500
 
 - name: cleanup iptables (tcp)
-  shell: iptables -D INPUT -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "consul tcp ({{ item }})"
+  shell: iptables -D INPUT -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "contiv_consul tcp ({{ item }})"
   become: true
   with_items:
     - 8400
