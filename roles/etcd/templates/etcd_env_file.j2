@@ -1,0 +1,20 @@
+{% if etcd_proxy %}
+ETCD_PROXY=on
+{% elif etcd_member %}
+ETCD_NAME={{ etcd_node_name }}
+ETCD_DATA_DIR={{ etcd_data_dir }}
+ETCD_WAL_DIR={{ etcd_wal_dir }}
+ETCD_INITIAL_CLUSTER_TOKEN={{ etcd_initial_cluster_token }}
+ETCD_LISTEN_CLIENT_URLS={{ etcd_client_listen_urls|join(",") }}
+ETCD_ADVERTISE_CLIENT_URLS={{ etcd_client_advertise_urls|join(",") }}
+ETCD_INITIAL_ADVERTISE_PEER_URLS={{ etcd_peer_advertise_urls|join(",") }}
+ETCD_LISTEN_PEER_URLS={{ etcd_peer_listen_urls|join(",") }}
+ETCD_HEARTBEAT_INTERVAL={{ etcd_heartbeat_interval }}
+ETCD_ELECTION_TIMEOUT={{ etcd_election_timeout }}
+ETCD_INITIAL_CLUSTER_STATE=new
+{% endif %}
+ETCD_INITIAL_CLUSTER=
+{%- for host in groups[etcd_members_group] %}
+    {{- hostvars[host]['etcd_node_name'] ~ '=' ~ hostvars[host]['etcd_peer_advertise_urls'][0] -}}
+    {% if not loop.last -%},{%- endif %}
+{% endfor %}

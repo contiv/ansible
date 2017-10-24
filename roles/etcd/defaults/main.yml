@@ -1,14 +1,56 @@
 ---
 # role variable for the etcd service
 
+etcd_version: v2.3.8
+etcd_cluster_name: contiv
+
+etcd_proxy: "{{ etcd_proxies_group in groups
+                 and inventory_hostname in groups[etcd_proxies_group] }}"
+etcd_member: "{{ etcd_members_group in groups
+                 and inventory_hostname in groups[etcd_members_group] }}"
+etcd_service_name: "etcd{{ etcd_proxy|bool|ternary('-proxy','') }}-{{
+    etcd_cluster_name}}"
+etcd_docker_name: "{{ etcd_service_name }}"
+
+etcd_node_name: "{{ inventory_hostname_short }}"
 etcd_client_port1: 2379
 etcd_client_port2: 4001
+
 etcd_peer_port1: 2380
-etcd_peer_port2: 7001
-etcd_peers_group: "service-master"
-etcd_rule_comment: "contiv_etcd traffic"
-etcd_version: "v2.3.8"
+
+etcd_members_group: netplugin-master
+etcd_proxies_group: netplugin-worker
+etcd_initial_cluster_token: "etcd-{{ etcd_cluster_name }}"
+
+etcd_rule_comment: "{{ etcd_cluster_name }}_etcd traffic"
+
 etcd_heartbeat_interval: 1000
 etcd_election_timeout: 10000
-etcd_data_dir: /var/lib/etcd
+
+etcd_data_dir: /var/lib/etcd/data
+etcd_wal_dir: /var/lib/etcd/wal
+
 etcd_reset_state: false
+
+# Etcd has "advertise" urls for the other nodes to use if it's behind a proxy
+# Also, it needs to "listen" on IPs and ports for peers to talk to
+etcd_peer_advertise_interface: "{{ ansible_default_ipv4.interface }}"
+etcd_peer_advertise_address: "{{
+    hostvars[inventory_hostname]['ansible_' + etcd_peer_advertise_interface]['ipv4']['address'] }}"
+etcd_peer_listen_address: "{{ etcd_peer_advertise_address }}"
+etcd_peer_advertise_urls:
+  - "http://{{ etcd_peer_advertise_address }}:{{ etcd_peer_port1 }}"
+etcd_peer_listen_urls:
+  - "http://{{ etcd_peer_listen_address }}:{{ etcd_peer_port1 }}"
+
+etcd_client_advertise_address: "{{ etcd_peer_advertise_address }}"
+etcd_client_listen_address: 0.0.0.0
+etcd_client_advertise_urls:
+  - "http://{{ etcd_client_advertise_address }}:{{ etcd_client_port1 }}"
+  - "http://{{ etcd_client_advertise_address }}:{{ etcd_client_port2 }}"
+etcd_client_listen_urls:
+  - "http://{{ etcd_client_listen_address }}:{{ etcd_client_port1 }}"
+  - "http://{{ etcd_client_listen_address }}:{{ etcd_client_port2 }}"
+
+etcd_systemd_restart_delay_sec: 2
+etcd_systemd_restart: always

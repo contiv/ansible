@@ -1,43 +1,56 @@
 ---
 # This role contains tasks for configuring and starting etcd service
 
-- name: download etcdctl {{ etcd_version }}
-  get_url:
-    validate_certs: "{{ validate_certs }}"
-    url: https://github.com/coreos/etcd/releases/download/{{ etcd_version }}/etcd-{{ etcd_version }}-linux-amd64.tar.gz
-    dest: /tmp/etcd-{{ etcd_version }}-linux-amd64.tar.gz
-  tags:
-    - prebake-for-dev
+- block:
+    - name: download etcdctl {{ etcd_version }}
+      get_url:
+        validate_certs: "{{ validate_certs }}"
+        url: https://github.com/coreos/etcd/releases/download/{{ etcd_version }}/etcd-{{ etcd_version }}-linux-amd64.tar.gz
+        dest: /tmp/etcd-{{ etcd_version }}-linux-amd64.tar.gz
+      tags:
+        - prebake-for-dev
 
-- name: install etcdctl
-  shell: >
-      tar vxzf /tmp/etcd-{{ etcd_version }}-linux-amd64.tar.gz && \
-      mv etcd-{{ etcd_version }}-linux-amd64/etcd* /usr/bin
-  tags:
-    - prebake-for-dev
+    - name: install etcdctl binaries
+      shell: >
+          tar vxzf /tmp/etcd-{{ etcd_version }}-linux-amd64.tar.gz &&
+          mv etcd-{{ etcd_version }}-linux-amd64/etcd* /usr/bin
+      tags:
+        - prebake-for-dev
 
-- name: install etcd {{ etcd_version }}
-  shell: docker pull quay.io/coreos/etcd:{{ etcd_version }}
-  tags:
-    - prebake-for-dev
+    - name: pull etcd container {{ etcd_version }}
+      shell: docker pull quay.io/coreos/etcd:{{ etcd_version }}
+      tags:
+        - prebake-for-dev
 
-- name: setup iptables for etcd
-  shell: >
-      ( iptables -L INPUT | grep "{{ etcd_rule_comment }} ({{ item }})" ) || \
-      iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "{{ etcd_rule_comment }} ({{ item }})"
-  become: true
-  with_items:
-    - "{{ etcd_client_port1 }}"
-    - "{{ etcd_client_port2 }}"
-    - "{{ etcd_peer_port1 }}"
-    - "{{ etcd_peer_port2 }}"
+    - name: setup iptables for etcd
+      shell: >
+          ( iptables -L INPUT | grep "{{ etcd_rule_comment }} ({{ item }})" ) || \
+          iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT -m comment --comment "{{ etcd_rule_comment }} ({{ item }})"
+      become: true
+      with_items:
+        - "{{ etcd_client_port1 }}"
+        - "{{ etcd_client_port2 }}"
+        - "{{ etcd_peer_port1 }}"
 
-- name: copy the etcd start/stop script
-  template: src=etcd.j2 dest=/usr/bin/etcd.sh mode=u=rwx,g=rx,o=rx
+    - name: Set facts from role defaults for sharing with other hosts
+      set_fact:
+        etcd_node_name: "{{ etcd_node_name }}"
+        etcd_peer_advertise_urls: "{{ etcd_peer_advertise_urls }}"
 
-- name: copy systemd units for etcd
-  copy: src=etcd.service dest=/etc/systemd/system/etcd.service
+    - name: template etcd docker environment file
+      template:
+        src: etcd_env_file.j2
+        dest: "/etc/{{ etcd_service_name }}.env"
 
-- name: start etcd
-  systemd: name=etcd daemon_reload=yes state=started enabled=yes
+    - name: template systemd units for etcd
+      template:
+        src: etcd.service.j2
+        dest: "/etc/systemd/system/{{ etcd_service_name }}.service"
 
+    - name: start etcd server or proxy
+      systemd:
+        name: "{{ etcd_service_name }}"
+        daemon_reload: yes
+        state: started
+        enabled: yes
+  when: etcd_member|bool or etcd_proxy|bool
