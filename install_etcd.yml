@@ -1,11 +1,13 @@
 # netplugin-master hosts set up netmaster nodes
-- hosts: netplugin-master
+- name: Install etcd to master
+  hosts: netplugin-master
   become: true
   environment: '{{ env }}'
   roles:
     - { role: etcd, run_as: master }
 
-- hosts: netplugin-worker
+- name: Install etc to worker
+  hosts: netplugin-worker
   become: true
   environment: '{{ env }}'
   roles:
