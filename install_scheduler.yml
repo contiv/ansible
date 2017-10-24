@@ -1,11 +1,13 @@
 # Install scheduler stack with manager nodes on master nodes and the others as workers
-- hosts: netplugin-master
+- name: Install scheduler to master
+  hosts: netplugin-master
   become: true
   environment: '{{ env }}'
   roles:
     - { role: scheduler_stack, docker_api_port: 2385, run_as: master }
 
-- hosts: netplugin-worker
+- name: Install scehduler to workers
+  hosts: netplugin-worker
   become: true
   environment: '{{ env }}'
   roles:

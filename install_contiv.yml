@@ -1,10 +1,12 @@
 # netplugin-master hosts set up netmaster and rest as netplugin
-- hosts: netplugin-master
+- name: Install Contiv to Master
+  hosts: netplugin-master
   become: true
   environment: '{{ env }}'
   roles:
     - { role: contiv_network, scheduler_provider: native-swarm, run_as: master }
-- hosts: netplugin-worker
+- name: Install Contiv to Workers
+  hosts: netplugin-worker
   become: true
   environment: '{{ env }}'
   roles:
