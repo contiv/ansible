@@ -1,0 +1,61 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+platforms:
+    - name: etcd1
+      box: contiv/centos73
+      box_version: 0.10.1
+      provider_cpus: 2
+      provider_memory: 512
+      groups:
+        - netplugin-master
+      interfaces:
+        - network_name: private_network
+          type: static
+          ip: 192.168.11.3
+          auto_config: true
+    - name: etcd2
+      box: contiv/centos73
+      box_version: 0.10.1
+      provider_cpus: 2
+      provider_memory: 512
+      groups:
+        - netplugin-master
+      interfaces:
+        - network_name: private_network
+          type: static
+          ip: 192.168.11.4
+          auto_config: true
+    - name: etcd3
+      box: contiv/centos73
+      box_version: 0.10.1
+      provider_cpus: 2
+      provider_memory: 512
+      groups:
+        - netplugin-master
+      interfaces:
+        - network_name: private_network
+          type: static
+          ip: 192.168.11.5
+          auto_config: true
+    - name: etcd-proxy
+      box: contiv/centos73
+      box_version: 0.10.1
+      provider_cpus: 2
+      provider_memory: 512
+      groups:
+        - netplugin-worker
+      interfaces:
+        - network_name: private_network
+          type: static
+          ip: 192.168.11.6
+          auto_config: true
+provisioner:
+  name: ansible
+  playbooks:
+    create: create.yml
+    destroy: destroy.yml
