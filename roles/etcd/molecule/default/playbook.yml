@@ -1,0 +1,7 @@
+- hosts: all
+  become: yes
+  vars:
+    validate_certs: no
+    etcd_peer_advertise_interface: enp0s8
+  roles:
+    - role: etcd

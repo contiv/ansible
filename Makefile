@@ -11,3 +11,10 @@ test-cleanup:
 
 test-test:
 	CONTIV_ANSIBLE_TAGS="prebake-for-test" vagrant provision
+
+test-etcd:
+	cd roles/etcd && virtualenv venv && . venv/bin/activate \
+		&& pip install --upgrade pip \
+		&& pip install -r molecule-requirements.txt \
+		&& molecule converge && molecule destroy \
+	|| (molecule destroy && exit 1)
