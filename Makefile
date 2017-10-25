@@ -16,4 +16,5 @@ test-etcd:
 	cd roles/etcd && virtualenv venv && . venv/bin/activate \
 		&& pip install --upgrade pip \
 		&& pip install -r molecule-requirements.txt \
-		&& molecule converge; molecule destroy
+		&& molecule converge && molecule destroy \
+	|| (molecule destroy && exit 1)
