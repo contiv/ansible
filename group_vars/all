@@ -30,3 +30,5 @@ service_vip: "{{ netmaster_ip }}"
 # netmaster_ip:
 
 host_capability: "can-run-user-containers, storage"
+
+etcd_peer_advertise_interface: "{{ control_interface }}"
