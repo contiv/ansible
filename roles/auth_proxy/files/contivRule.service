@@ -3,7 +3,11 @@ Description=run contiv rule service
 
 [Service]
 Type=oneshot
+# firewalld acquires the lock by 3s but isn't finished yet
+# but contivRule.sh wait for the lock release
+ExecStartPre=/bin/sleep 3
 ExecStart=/usr/bin/contivRule.sh
 StandardOutput=journal
+
 [Install]
-WantedBy=multi-user.target
+WantedBy=multi-user.target firewalld.service
