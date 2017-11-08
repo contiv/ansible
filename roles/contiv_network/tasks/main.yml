@@ -37,6 +37,9 @@
 - name: ensure netplugin directory exists
   file: path=/usr/bin/contiv/netplugin state=directory
 
+- name: create links for netctl binary
+  file: src=/usr/bin/contiv/netplugin/netctl dest=/usr/bin/netctl state=link force=yes
+
 - include: services.yml
   when: contiv_v2plugin_install == False
 
@@ -47,9 +50,6 @@
 # cni plugin for contiv, which is available after extraction of binaries
 - include: k8s_tasks.yml
   when: scheduler_provider == "kubernetes"
-
-- name: create links for netctl binary
-  file: src=/usr/bin/contiv/netplugin/netctl dest=/usr/bin/netctl state=link force=yes
 
 - name: copy bash auto complete file for netctl
   file: src=/usr/bin/contiv/netplugin/contrib/completion/bash/netctl dest=/etc/bash_completion.d/netctl state=link
@@ -68,4 +68,4 @@
 - name: set fwd mode
   shell: netctl --netmaster {{ netctl_url }} global set --fwd-mode "{{ fwd_mode }}"
   when: (run_as == "master")
-  run_once: true 
+  run_once: true
