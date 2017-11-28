@@ -42,9 +42,11 @@
 
 - include: services.yml
   when: contiv_v2plugin_install == False
+  static: no
 
 - include: v2plugin.yml
   when: contiv_v2plugin_install == True
+  static: no
 
 # k8s tasks are run after extracting the binaries as we need to copy the k8s
 # cni plugin for contiv, which is available after extraction of binaries
