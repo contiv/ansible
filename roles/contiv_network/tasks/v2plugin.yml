@@ -1,8 +1,13 @@
 ---
 # This role contains tasks for starting docker plugin service
 
+- name: for v2 plugin, extract netctl binaries
+  shell: tar vxjf {{ contiv_network_dest_file }} netctl contrib/completion/bash/netctl
+  args:
+    chdir: /usr/bin/contiv/netplugin
+
 - name: create the directories needed for ovs
-  shell: mkdir -p {{ item }}
+  file: state=directory path={{ item }}
   with_items:
     - "/etc/openvswitch"
     - "/var/log/openvswitch"
@@ -10,12 +15,19 @@
 - name: check if v2plugin has been installed on {{ run_as }} nodes
   shell: docker plugin ls | grep -n {{ contiv_v2plugin_image }}
   register: v2plugin_installed
+  changed_when: no
   ignore_errors: True
 
-- name: install v2plugin on {{ run_as }} nodes
+- name: check if v2plugin archive is in the contiv_cache
+  local_action: stat path=/var/contiv_cache/{{ contiv_v2plugin_tar_filename }} follow=yes
+  register: v2plugin_archive_stat
+
+- name: install v2plugin on {{ run_as }} nodes from dockerhub
   shell: >
     /usr/bin/docker plugin install --grant-all-permissions {{contiv_v2plugin_image}} ctrl_ip={{node_addr}} control_url={{node_addr}}:{{netmaster_port}} vxlan_port={{vxlan_port}} iflist={{netplugin_if}} plugin_name={{contiv_v2plugin_image}} cluster_store={{cluster_store}} plugin_role={{run_as}} fwd_mode={{ fwd_mode }}
-  when: v2plugin_installed|failed
+  when:
+    - v2plugin_installed|failed
+    - not v2plugin_archive_stat.stat.exists
 
 - name: copy v2plugin.sh file
   copy: src=v2plugin.sh dest=/usr/bin/v2plugin.sh mode=u=rwx,g=rx,o=rx
@@ -23,10 +35,12 @@
 - name: copy systemd units for v2plugin
   copy: src=v2plugin.service dest=/etc/systemd/system/v2plugin.service
 
-- name: start v2plugin
-  systemd: name=v2plugin  enabled=yes
+- name: enable v2plugin
+  systemd: name=v2plugin enabled=yes
 
-- name: for v2 plugin, extract netctl binary
-  shell: tar vxjf {{ contiv_network_dest_file }} netctl contrib/completion/bash/netctl
-  args:
-    chdir: /usr/bin/contiv/netplugin
+- name: include v2plugin install from contiv_cache
+  include: v2plugin_local_install.yml
+  when:
+    - v2plugin_installed|failed
+    - v2plugin_archive_stat.stat.exists
+  static: no

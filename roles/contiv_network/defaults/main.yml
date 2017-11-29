@@ -4,7 +4,8 @@
 # NOTE: Role defaults have a lower priority than inventory vars.
 # Include variables which need to be overridden by inventory vars here.
 
-contiv_v2plugin_image: "contiv/v2plugin:1.0.3"
+contiv_v2plugin_image: "contiv/v2plugin:{{ contiv_network_version }}"
+contiv_v2plugin_tar_filename: "v2plugin-{{ contiv_network_version }}.tar.gz"
 
 contiv_network_mode: "standalone" # Accepted values: standalone, aci
 netplugin_mode: "docker" # Accepted values: docker, kubernetes
@@ -28,7 +29,7 @@ netplugin_rule_comment: "contiv_network traffic"
 
 aci_gw_image: "contiv/aci-gw"
 # contiv tar files to get netplugin binary
-contiv_network_version: "1.0.3"
+contiv_network_version: "1.1.7"
 contiv_network_tar_file: "netplugin-{{ contiv_network_version }}.tar.bz2"
 contiv_network_src_tar_file: "{{ contiv_standalone_binaries }}/{{ contiv_network_tar_file }}"
 contiv_network_src_file: "https://github.com/contiv/netplugin/releases/download/{{ contiv_network_version }}/{{ contiv_network_tar_file }}"
