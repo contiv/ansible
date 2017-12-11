@@ -21,7 +21,7 @@ start)
     /usr/bin/docker run -t --net=host --name=swarm-agent \
         swarm:{{ swarm_version }} join \
         --advertise={{ node_addr }}:{{ docker_api_port }} \
-        etcd://{{ node_addr }}:{{ etcd_client_port1 }}
+        etcd://{{ swarm_etcd_url }}:{{ etcd_client_port1 }}
     ;;
 
 stop)
