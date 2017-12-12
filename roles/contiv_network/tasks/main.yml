@@ -25,13 +25,13 @@
 
 - name: copy contiv binaries
   copy: src="{{ contiv_standalone_binaries }}/{{ contiv_network_tar_file }}" dest="{{ contiv_network_dest_file }}"
-  when: contiv_network_local_install == True 
+  when: contiv_network_local_install == True
 
 - name: download contiv binaries
   get_url:
     validate_certs: "{{ validate_certs }}"
     url: "{{ contiv_network_src_file }}"
-    dest: "{{ contiv_network_dest_file }}" 
+    dest: "{{ contiv_network_dest_file }}"
   when: contiv_network_local_install == False
 
 - name: ensure netplugin directory exists

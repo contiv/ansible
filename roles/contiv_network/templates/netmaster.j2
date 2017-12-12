@@ -1,1 +1,6 @@
-NETMASTER_ARGS="--cluster-mode {{netplugin_mode}} -cluster-store {{cluster_store}} -listen-url {{ listen_url }} -control-url {{ control_url }}"
+CONTIV_NETMASTER_NET_MODE={{ (fwd_mode == 'bridge') | ternary('vlan', 'vxlan') }}
+CONTIV_NETMASTER_PLUGIN_NAME={{contiv_v2plugin_image}}
+CONTIV_NETMASTER_FORWARD_MODE={{ fwd_mode }}
+CONTIV_NETMASTER_INTERNAL_ADDRESS={{node_addr}}:{{netmaster_port}}
+CONTIV_NETMASTER_MODE=docker
+{{ (cluster_store_driver == 'etcd') | ternary('CONTIV_NETMASTER_ETCD_ENDPOINTS', 'CONTIV_NETMASTER_CONSUL_ENDPOINTS') }}={{ cluster_store_url }}
