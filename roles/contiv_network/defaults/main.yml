@@ -13,7 +13,8 @@ fwd_mode: "bridge" #Accepted values: bridge , routing
 listen_url: ":9999"
 control_url: ":9999"
 netctl_url: "http://netmaster:9999"
-cluster_store: "etcd://127.0.0.1:2379"
+cluster_store_url: "http://127.0.0.1:2379"
+cluster_store_driver: etcd
 contiv_standalone_binaries: "/var/contiv_cache"
 ofnet_master_port: 9001
 ofnet_agent_port1: 9002

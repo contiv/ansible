@@ -1,1 +1,7 @@
-NETPLUGIN_ARGS='-plugin-mode {{netplugin_mode}} -vlan-if {{netplugin_if}} -vtep-ip {{node_addr}} -ctrl-ip {{node_addr}} -cluster-store {{cluster_store}} '
+CONTIV_NETPLUGIN_CONTROL_IP={{node_addr}}
+CONTIV_NETPLUGIN_FORWARD_MODE={{ fwd_mode }}
+CONTIV_NETPLUGIN_MODE=docker
+CONTIV_NETPLUGIN_VXLAN_PORT={{vxlan_port}}
+CONTIV_NETPLUGIN_VLAN_UPLINKS={{netplugin_if}}
+CONTIV_NETPLUGIN_NET_MODE={{ (fwd_mode == 'bridge') | ternary('vlan', 'vxlan') }}
+{{ (cluster_store_driver == 'etcd') | ternary('CONTIV_NETPLUGIN_ETCD_ENDPOINTS', 'CONTIV_NETPLUGIN_CONSUL_ENDPOINTS') }}={{ cluster_store_url }}

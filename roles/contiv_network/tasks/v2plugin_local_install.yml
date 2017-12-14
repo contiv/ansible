@@ -25,14 +25,20 @@
     - name: Set v2plugin settings
       shell: >
         docker plugin set {{ contiv_v2plugin_image }}
-        ctrl_ip={{ node_addr }}
-        control_url={{ node_addr }}:{{ netmaster_port }}
-        vxlan_port={{ vxlan_port }}
-        iflist={{ netplugin_if }}
-        plugin_name={{ contiv_v2plugin_image }}
-        cluster_store={{ cluster_store }}
-        plugin_role={{ run_as }}
-        fwd_mode={{ fwd_mode }}
+        CONTIV_ROLE={{ (run_as == 'master') | ternary('netmaster', 'netplugin') }}
+        CONTIV_NETPLUGIN_CONTROL_IP={{node_addr}}
+        CONTIV_NETPLUGIN_FORWARD_MODE={{ fwd_mode }}
+        CONTIV_NETPLUGIN_MODE=docker
+        CONTIV_NETPLUGIN_VXLAN_PORT={{vxlan_port}}
+        CONTIV_NETPLUGIN_VLAN_UPLINKS={{netplugin_if}}
+        CONTIV_NETPLUGIN_NET_MODE={{ (fwd_mode == 'bridge') | ternary('vlan', 'vxlan') }}
+        {{ (cluster_store_driver == 'etcd') | ternary('CONTIV_NETPLUGIN_ETCD_ENDPOINTS', 'CONTIV_NETPLUGIN_CONSUL_ENDPOINTS') }}={{ cluster_store_url }}
+        CONTIV_NETMASTER_NET_MODE={{ (fwd_mode == 'bridge') | ternary('vlan', 'vxlan') }}
+        CONTIV_NETMASTER_PLUGIN_NAME={{contiv_v2plugin_image}}
+        CONTIV_NETMASTER_FORWARD_MODE={{ fwd_mode }}
+        CONTIV_NETMASTER_INTERNAL_ADDRESS={{node_addr}}:{{netmaster_port}}
+        CONTIV_NETMASTER_MODE=docker
+        {{ (cluster_store_driver == 'etcd') | ternary('CONTIV_NETMASTER_ETCD_ENDPOINTS', 'CONTIV_NETMASTER_CONSUL_ENDPOINTS') }}={{ cluster_store_url }}
 
   always:
     - name: Remove v2plugin rootfs
