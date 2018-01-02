@@ -1,6 +1,11 @@
 ---
 # This role contains tasks for starting docker plugin service
 
+- name: for v2 plugin, extract netctl binary
+  shell: tar vxjf {{ contiv_network_dest_file }} netctl contrib/completion/bash/netctl
+  args:
+    chdir: /usr/bin/contiv/netplugin
+
 - name: create the directories needed for ovs
   shell: mkdir -p {{ item }}
   with_items:
@@ -25,8 +30,3 @@
 
 - name: start v2plugin
   systemd: name=v2plugin  enabled=yes
-
-- name: for v2 plugin, extract netctl binary
-  shell: tar vxjf {{ contiv_network_dest_file }} netctl contrib/completion/bash/netctl
-  args:
-    chdir: /usr/bin/contiv/netplugin
