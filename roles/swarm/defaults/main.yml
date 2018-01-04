@@ -5,3 +5,4 @@ swarm_api_port: 2375
 swarm_version: "1.2.5"
 swarm_rule_comment: "contiv_swarm traffic"
 swarm_strategy: spread
+swarm_etcd_url: "{{ node_addr if run_as == 'master' else '127.0.0.1' }}"
