@@ -19,6 +19,8 @@
 
     - name: pull etcd container {{ etcd_version }}
       shell: docker pull quay.io/coreos/etcd:{{ etcd_version }}
+      retries: 5
+      delay: 10
       tags:
         - prebake-for-dev
 
